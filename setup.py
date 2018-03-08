@@ -23,7 +23,7 @@ class install(distutils_install.install):
         ('install_headers', lambda self:False),
         ('install_scripts', lambda self:True),
         ('install_data', lambda self:False),
-        ('install_egg_info', lambda self:False),
+        ('install_egg_info', lambda self:True),
     ]
 
 

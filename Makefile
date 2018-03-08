@@ -15,8 +15,7 @@ flake:
 build: clean tox
 	# build the sdist source tarball
 	$(python) ./setup.py sdist
-	# provide rpm changelog from git changelog
-	#git log dist/replace_with_package_version.changes
+	# TODO: provide rpm changelog from git changelog
 	# update package version in spec file
 	cat rpm/obs-service-replace_using_package_version-spec-template | sed -e s'/__VERSION__/${version}/' > dist/obs-service-replace_using_package_version.spec
 

@@ -29,12 +29,14 @@ BuildRequires:  python3-flake8
 BuildRequires:  python3-setuptools
 BuildRequires:  python3-tox
 BuildRequires:  python3-pytest-cov
+Requires:       python3-setuptools
 Requires:       python3-docopt
 %else
 BuildRequires:  python-flake8
 BuildRequires:  python-setuptools
 BuildRequires:  python-tox
 BuildRequires:  python-pytest-cov
+Requires:       python-setuptools
 Requires:       python-docopt
 %endif
 BuildRoot:      %{_tmppath}/%{name}-%{version}-build
@@ -62,12 +64,12 @@ python2 setup.py build
 %if 0%{?suse_version} > 1315
 # Install Python 3 version
 python3 setup.py install --install-scripts=%{_prefix}/lib/obs/service \
-    --install-lib=%{_prefix}/lib/obs/service \
+    --install-lib=%{_prefix}/lib/obs/service/ \
     --root=%{buildroot} \
 %else
 # Install Python 2 version
 python2 setup.py install --install-scripts=%{_prefix}/lib/obs/service \
-    --install-lib=%{_prefix}/lib/obs/service \
+    --install-lib=%{_prefix}/lib/obs/service/ \
     --root=%{buildroot} \
 %endif
 
