@@ -1,0 +1,11 @@
+graft replaceUsingPackageVersion 
+graft test
+
+global-exclude *.py[co] __pycache__
+exclude .gitignore
+exclude test/.coverage
+exclude .travis.yml
+include README.md
+include setup.cfg
+prune .cache
+prune .git

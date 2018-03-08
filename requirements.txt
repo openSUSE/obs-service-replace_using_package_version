@@ -1,0 +1,9 @@
+coverage
+docopt
+flake8
+pycodestyle
+pyflakes
+pytest
+pytest-cov
+tox
+mock
