@@ -117,3 +117,11 @@ def get_pkg_version_from_rpm(rpm_file):
         'rpm', '-qp', '--queryformat', '%{VERSION}', rpm_file
     ]
     return run_command(command)
+
+
+def init(__name__):
+    if __name__ == '__main__':
+        main()
+
+
+init(__name__)

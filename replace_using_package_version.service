@@ -1,0 +1,22 @@
+<service name="replace_using_package_version">
+  <summary>Replaces a regex  with the version value of a package</summary>
+  <description>This service replaces a given regex with the version value of
+a given package. Can be used to align the version of you package or image
+to the version of another package.</description>
+  <parameter name="file">
+    <description>This is the file where the change will be applied</description>
+  </parameter>
+  <parameter name="regex">
+    <description>This is the regular expression used to parse the input file. 
+It uses python re module syntax</description>
+  </parameter>
+  <parameter name="package">
+    <description>This is the package whos version will be used as a replacement
+for the regex. It must be included to the build as dependency.</description>
+  </parameter>
+  <parameter name="replacement">
+    <description>This parameter is an alternative to the package parameter,
+instead to look for a package version it will just use the given string
+for the regex replacement. It is mostly used to debug or test the regex.</description>
+  </parameter>
+</service>

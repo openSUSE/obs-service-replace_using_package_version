@@ -5,10 +5,6 @@ python = $(shell which $(python_lookup_name))
 version := $(shell $(python) -c \
     'from replaceUsingPackageVersion.version import __version__; print(__version__)')
 
-test:
-	tox -e test
-	tox -e py27
-
 flake:
 	tox -e check
 

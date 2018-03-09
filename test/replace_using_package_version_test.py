@@ -6,7 +6,8 @@ from replaceUsingPackageVersion.replace_using_package_version import (
     apply_regex_to_file,
     find_package_version,
     main,
-    run_command
+    run_command,
+    init
 )
 
 from replaceUsingPackageVersion.version import __version__
@@ -196,3 +197,11 @@ class TestRegexReplacePackageVersion(object):
             run_command(['dummycmd', 'arg1']) == 'stdout'
         except Exception as e:
             assert 'Command "dummycmd arg1" failed' in str(e)
+
+    @patch((
+        'replaceUsingPackageVersion.'
+        'replace_using_package_version.main'
+    ))
+    def test_main(self, mock_main):
+        init('__main__')
+        assert mock_main.called

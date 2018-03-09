@@ -19,23 +19,17 @@
 Name:           obs-service-%{service}
 Version:        __VERSION__
 Release:        0
-Summary:        An OBS source service: Update version references in a file
+Summary:        An OBS service: Replaces a regex  with the version value of a package
 License:        GPL-3.0+
 Group:          Development/Tools/Building
-Url:            https://github.com/openSUSE/obs-service-%{service}
+Url:            https://github.com/davidcassany/obs-service-%{service}
 Source0:        %{service}-%{version}.tar.gz
 %if 0%{?suse_version} > 1315
-BuildRequires:  python3-flake8
 BuildRequires:  python3-setuptools
-BuildRequires:  python3-tox
-BuildRequires:  python3-pytest-cov
 Requires:       python3-setuptools
 Requires:       python3-docopt
 %else
-BuildRequires:  python-flake8
 BuildRequires:  python-setuptools
-BuildRequires:  python-tox
-BuildRequires:  python-pytest-cov
 Requires:       python-setuptools
 Requires:       python-docopt
 %endif
@@ -43,10 +37,9 @@ BuildRoot:      %{_tmppath}/%{name}-%{version}-build
 BuildArch:      noarch
 
 %description
-This is a source service for openSUSE Build Service.
-
-Very simple script to set version references of a given file from
-an specified package.
+This service replaces a given regex with the version value of
+a given package. Can be used to align the version of you package or image
+to the version of another package.
 
 %prep
 %setup -q -n %{service}-%{version} 
@@ -63,19 +56,20 @@ python2 setup.py build
 %install
 %if 0%{?suse_version} > 1315
 # Install Python 3 version
-python3 setup.py install --install-scripts=%{_prefix}/lib/obs/service \
-    --install-lib=%{_prefix}/lib/obs/service/ \
-    --root=%{buildroot} \
+python3 setup.py install --root %{buildroot} \
+    --install-script %{_prefix}/lib/obs/service \
+    --install-data %{_prefix}/lib/obs/service
 %else
 # Install Python 2 version
-python2 setup.py install --install-scripts=%{_prefix}/lib/obs/service \
-    --install-lib=%{_prefix}/lib/obs/service/ \
-    --root=%{buildroot} \
+python2 setup.py install --root %{buildroot} \
+    --install-script %{_prefix}/lib/obs/service \
+    --install-data %{_prefix}/lib/obs/service
 %endif
 
 %files
 %defattr(-,root,root)
-%dir %{_prefix}/lib/obs
+%dir %{_prefix}/lib/obs                                                         
+%dir %{_prefix}/lib/obs/service
 %{_prefix}/lib/obs/service
 
 %changelog
