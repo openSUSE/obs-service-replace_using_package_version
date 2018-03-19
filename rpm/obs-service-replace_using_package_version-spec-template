@@ -22,7 +22,7 @@ Release:        0
 Summary:        An OBS service: Replaces a regex  with the version value of a package
 License:        GPL-3.0+
 Group:          Development/Tools/Building
-Url:            https://github.com/davidcassany/obs-service-%{service}
+Url:            https://github.com/openSUSE/obs-service-%{service}
 Source0:        %{service}-%{version}.tar.gz
 %if 0%{?suse_version} > 1315
 BuildRequires:  python3-setuptools
