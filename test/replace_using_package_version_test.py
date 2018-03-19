@@ -43,8 +43,20 @@ class TestRegexReplacePackageVersion(object):
         'replaceUsingPackageVersion.'
         'replace_using_package_version.run_command'
     ))
+    def test_find_package_version(self, mock_run):
+        mock_run.return_value = '2.3.1'
+        assert find_package_version('package', '/foo') == '2.3.1'
+        mock_run.called_once_with([
+            'rpm', '-q', '--queryformat',
+            '%{NAME}', 'package.rpm'
+        ])
+
+    @patch((
+        'replaceUsingPackageVersion.'
+        'replace_using_package_version.run_command'
+    ))
     @patch('os.walk')
-    def test_find_package_version(self, mock_walk, mock_run):
+    def test_find_package_version_rpm_not_installed(self, mock_walk, mock_run):
         mock_walk.return_value = [
             ('/foo', ['bar', 'zez'], ['baz']),
             ('/foo/bar', [], ['spam', 'package.rpm']),
@@ -53,6 +65,8 @@ class TestRegexReplacePackageVersion(object):
         outputs = ['2.3.1', 'package', '2.2.4', 'package']
 
         def cmd_output(command):
+            if '-q' in command:
+                raise Exception('rpm not installed')
             return outputs.pop()
 
         mock_run.side_effect = cmd_output
@@ -82,13 +96,15 @@ class TestRegexReplacePackageVersion(object):
         outputs = ['another_non_matching_name', 'not_matching_name']
 
         def cmd_output(command):
+            if '-q' in command:
+                raise Exception('rpm not installed')
             return outputs.pop()
 
         mock_run.side_effect = cmd_output
         try:
             find_package_version('package', '/foo') == '2.3.1'
         except Exception as e:
-            assert 'Package not found' in str(e)
+            assert 'Package version not found' in str(e)
         mock_run.assert_has_calls([
             call([
                 'rpm', '-qp', '--queryformat',

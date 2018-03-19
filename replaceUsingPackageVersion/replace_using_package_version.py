@@ -67,21 +67,22 @@ def apply_regex_to_file(input_file, output_file, regex, replacement):
 
 
 def find_package_version(package, rpm_dir):
-    version = parse_version('')
-    for root, _, files in os.walk(rpm_dir):
-        packages = [
-            f for f in files if f.endswith('rpm') and package in f
-        ]
-        for pkg in packages:
-            rpm_file = os.path.realpath(os.path.join(root, pkg))
-            if get_pkg_name_from_rpm(rpm_file) == package:
-                parsed_version = parse_version(
-                    get_pkg_version_from_rpm(rpm_file)
-                )
-                if parsed_version >= version:
-                    version = parsed_version
+    try:
+        version = get_pkg_version(package)
+    except Exception:
+        version = parse_version('')
+        for root, _, files in os.walk(rpm_dir):
+            packages = [
+                f for f in files if f.endswith('rpm') and package in f
+            ]
+            for pkg in packages:
+                rpm_file = os.path.realpath(os.path.join(root, pkg))
+                if get_pkg_name_from_rpm(rpm_file) == package:
+                    rpm_version = get_pkg_version_from_rpm(rpm_file)
+                    if rpm_version >= version:
+                        version = rpm_version
     if not str(version):
-        raise Exception('Package not found')
+        raise Exception('Package version not found')
     return str(version)
 
 
@@ -116,7 +117,14 @@ def get_pkg_version_from_rpm(rpm_file):
     command = [
         'rpm', '-qp', '--queryformat', '%{VERSION}', rpm_file
     ]
-    return run_command(command)
+    return parse_version(run_command(command))
+
+
+def get_pkg_version(package):
+    command = [
+        'rpm', '-q', '--queryformat', '%{VERSION}', package
+    ]
+    return parse_version(run_command(command))
 
 
 def init(__name__):
