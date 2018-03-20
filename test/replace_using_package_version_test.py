@@ -1,6 +1,5 @@
 import sys
 from mock import patch, mock_open, call, Mock
-from pkg_resources import parse_version
 
 from replaceUsingPackageVersion.replace_using_package_version import (
     apply_regex_to_file,
