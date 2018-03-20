@@ -17,13 +17,13 @@
 %define service replace_using_package_version
 
 Name:           obs-service-%{service}
-Version:        __VERSION__
+Version:        0.0.1
 Release:        0
 Summary:        An OBS service: Replaces a regex  with the version value of a package
 License:        GPL-3.0-or-later
 Group:          Development/Tools/Building
 Url:            https://github.com/openSUSE/obs-service-%{service}
-Source0:        %{service}-%{version}.tar.gz
+Source0:        %{service}.tar
 %if 0%{?suse_version} > 1315
 BuildRequires:  python3-setuptools
 Requires:       python3-setuptools
@@ -42,7 +42,7 @@ a given package. Can be used to align the version of you package or image
 to the version of another package.
 
 %prep
-%setup -q -n %{service}-%{version} 
+%setup -q -n %{service}
 
 %build
 %if 0%{?suse_version} > 1315
@@ -68,7 +68,7 @@ python2 setup.py install --root %{buildroot} \
 
 %files
 %defattr(-,root,root)
-%dir %{_prefix}/lib/obs                                                         
+%dir %{_prefix}/lib/obs
 %dir %{_prefix}/lib/obs/service
 %{_prefix}/lib/obs/service
 

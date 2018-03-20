@@ -10,20 +10,12 @@ from replaceUsingPackageVersion.replace_using_package_version import (
     init
 )
 
-from replaceUsingPackageVersion.version import __version__
-
-
 open_to_patch = '{0}.open'.format(
     sys.version_info.major < 3 and "__builtin__" or "builtins"
 )
 
 
 class TestRegexReplacePackageVersion(object):
-
-    def test_version(self):
-        assert __version__ is not None
-        assert parse_version(__version__) > parse_version('')
-
     @patch(open_to_patch, new_callable=mock_open, read_data=(
         'This is a new line\n'
         'this is another new line\n'

@@ -27,7 +27,4 @@ $ pip install -r requirements.txt
 
 # Run tests and code style checks
 $ tox
-
-# Generate RPM source files in dist folder
-$ make build
 ```
