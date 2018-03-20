@@ -1,5 +1,24 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+#
+# Copyright (c) 2018 SUSE Linux GmbH.  All rights reserved.
+#
+# This file is part of obs-service-replace_using_package_version.
+#
+#   obs-service-replace_using_package_version is free software: you can
+#   redistribute it and/or modify it under the terms of the GNU General
+#   Public License as published by the Free Software Foundation, either
+#   version 3 of the License, or (at your option) any later version.
+#
+#   obs-service-replace_using_package_version is distributed in the hope
+#   that it will be useful, but WITHOUT ANY WARRANTY; without even the
+#   implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+#   See the GNU General Public License for more details.
+#
+#   You should have received a copy of the GNU General Public License
+#   along with obs-service-replace_using_package_version.  If not,
+#   see <http://www.gnu.org/licenses/>.
+#
 """
 replace_with_package_version.py
 
@@ -70,6 +89,7 @@ def find_package_version(package, rpm_dir):
     try:
         version = get_pkg_version(package)
     except Exception:
+        # If package is not found in rpmdb check local repositories
         version = parse_version('')
         for root, _, files in os.walk(rpm_dir):
             packages = [
