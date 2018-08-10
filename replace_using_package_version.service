@@ -14,6 +14,13 @@ It uses python re module syntax</description>
     <description>This is the package whos version will be used as a replacement
 for the regex. It must be included to the build as dependency.</description>
   </parameter>
+  <parameter name="match">
+    <description>This is a regular expression applied to the version of
+    of the package, if present first match is used as the replacement string.
+    If no match the full version string is used as the replacement string.
+    This is mostly used to get only a relevant part of the version (e.g. turn
+    something like 3.2.1~git124basdf to 3.2).</description>
+  </parameter>
   <parameter name="replacement">
     <description>This parameter is an alternative to the package parameter,
 instead to look for a package version it will just use the given string

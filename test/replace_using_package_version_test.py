@@ -4,6 +4,7 @@ from mock import patch, mock_open, call, Mock
 from replaceUsingPackageVersion.replace_using_package_version import (
     apply_regex_to_file,
     find_package_version,
+    find_match_in_version,
     main,
     run_command,
     init
@@ -29,6 +30,20 @@ class TestRegexReplacePackageVersion(object):
             'this is CHANGED new line\n'
             'and yet CHANGED line\n'
         ))
+
+    def test_find_match_in_version(self):
+        match = find_match_in_version('^(\d+(\.\d+){0,1})', '0.0.1')
+        assert match == '0.0'
+        match = find_match_in_version('^(\d+(\.\d+){0,1})', '0.0.1~rev+af232f')
+        assert match == '0.0'
+        match = find_match_in_version('^(\d+(\.\d+){0,1})', '234~rev+af232f')
+        assert match == '234'
+        try:
+            match = find_match_in_version(
+                '^(\d+(\.\d+){0,1})', 'as234~rev+af232f'
+            )
+        except Exception as e:
+            assert 'No match found for' in str(e)
 
     @patch((
         'replaceUsingPackageVersion.'
@@ -128,7 +143,8 @@ class TestRegexReplacePackageVersion(object):
             '--package': 'package',
             '--file': 'file',
             '--outdir': 'outdir',
-            '--regex': 'regex'
+            '--regex': 'regex',
+            '--match': None
         }
         mock_find_pkg.return_value = '0.0.1'
         main()
@@ -137,6 +153,47 @@ class TestRegexReplacePackageVersion(object):
         )
         mock_apply_regex.assert_called_once_with(
             'file', 'outdir/file', 'regex', '0.0.1'
+        )
+
+    @patch((
+        'replaceUsingPackageVersion.'
+        'replace_using_package_version.find_match_in_version'
+    ))
+    @patch((
+        'replaceUsingPackageVersion.'
+        'replace_using_package_version.apply_regex_to_file'
+    ))
+    @patch((
+        'replaceUsingPackageVersion.'
+        'replace_using_package_version.find_package_version'
+    ))
+    @patch('docopt.docopt')
+    @patch('os.path.isdir')
+    @patch('os.path.isfile')
+    def test_main_package_match_version(
+        self, mock_isfile, mock_isdir, mock_docopt,
+        mock_find_pkg, mock_apply_regex, mock_match_version
+    ):
+        mock_isdir.return_value = True
+        mock_isfile.return_value = True
+        mock_docopt.return_value = {
+            '--package': 'package',
+            '--file': 'file',
+            '--outdir': 'outdir',
+            '--regex': 'regex',
+            '--match': '^(\d+(\.\d+){0,2})'
+        }
+        mock_find_pkg.return_value = '0.0.1'
+        mock_match_version.return_value = '0.0'
+        main()
+        mock_find_pkg.assert_called_once_with(
+            'package', './repos'
+        )
+        mock_apply_regex.assert_called_once_with(
+            'file', 'outdir/file', 'regex', '0.0'
+        )
+        mock_match_version.assert_called_once_with(
+            '^(\d+(\.\d+){0,2})', '0.0.1'
         )
 
     @patch((

@@ -26,6 +26,7 @@ Usage:
     replace_using_package_version.py -h
     replace_using_package_version.py --file=FILE --regex=REGEX --outdir=DIR
         (--package=PACKAGE | --replacement=REPLACEMENT)
+        [--match=REGEX]
 
 Options:
     -h,--help                   : show this help message
@@ -33,7 +34,9 @@ Options:
     --file=FILE                 : file to update
     --package=PACKAGE           : package to check
     --replacement=REPLACEMENT   : replacement string for any match
-    --regex=REGEX               : regular expression for parsing
+    --regex=REGEX               : regular expression for parsing file
+    --match=REGEX               : regular expression for verison
+                                    first match will be used for replacement
 """
 import docopt
 import re
@@ -65,6 +68,8 @@ def main():
 
     if command_args['--package']:
         version = find_package_version(command_args['--package'], rpm_dir)
+        if command_args['--match']:
+            version = find_match_in_version(command_args['--match'], version)
         replacement = version
     else:
         replacement = command_args['--replacement']
@@ -104,6 +109,15 @@ def find_package_version(package, rpm_dir):
     if not str(version):
         raise Exception('Package version not found')
     return str(version)
+
+
+def find_match_in_version(regexpr, version):
+    search = re.search(regexpr, version)
+    if search is None:
+        raise Exception(
+            'No match found for {0} in {1}'.format(regexpr, version))
+    else:
+        return search.group(1)
 
 
 def run_command(command):
