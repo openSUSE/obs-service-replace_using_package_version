@@ -28,3 +28,22 @@ $ pip install -r requirements.txt
 # Run tests and code style checks
 $ tox
 ```
+
+## Usage
+
+Consider a `_service` file that includes the following:
+
+```xml
+<service name="replace_using_package_version" mode="buildtime">
+  <param name="file">mariadb-image.kiwi</param>
+  <param name="regex">%%TAG%%</param>
+  <param name="package">mariadb</param>
+</service>
+```
+
+The service in this case would look for the `mariadb` in the build environment,
+get the version of the package, and try to replace any occurrence of `%%TAG%%`
+in `mariadb-imgae.kiwi` file with the `mariadb` package version.
+
+This service is mainly designed to work in `buildtime` mode, so it is applied
+inside the build environment just before the start of the build.
