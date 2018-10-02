@@ -26,7 +26,7 @@ Usage:
     replace_using_package_version.py -h
     replace_using_package_version.py --file=FILE --regex=REGEX --outdir=DIR
         (--package=PACKAGE | --replacement=REPLACEMENT)
-        [--match=REGEX]
+        [--parse-version=DEPTH]
 
 Options:
     -h,--help                   : show this help message
@@ -35,8 +35,9 @@ Options:
     --package=PACKAGE           : package to check
     --replacement=REPLACEMENT   : replacement string for any match
     --regex=REGEX               : regular expression for parsing file
-    --match=REGEX               : regular expression for verison
-                                    first match will be used for replacement
+    --parse-version=DEPTH       : parse the package version string to match
+                                    major.minor.patch format. It can be set
+                                    to 'major', 'minor' or 'patch'.
 """
 import docopt
 import re
@@ -51,6 +52,12 @@ def main():
     """
     # TODO: probably there is a better way to set the repositories path
     rpm_dir = './repos'
+
+    version_regex = {
+        'major': '^(\d+)',
+        'minor': '^(\d+(\.\d+){0,1})',
+        'patch': '^(\d+(\.\d+){0,2})'
+    }
 
     command_args = docopt.docopt(__doc__)
 
@@ -67,9 +74,17 @@ def main():
     ])
 
     if command_args['--package']:
+        parse_version = command_args['--parse-version']
         version = find_package_version(command_args['--package'], rpm_dir)
-        if command_args['--match']:
-            version = find_match_in_version(command_args['--match'], version)
+        if parse_version and parse_version not in version_regex.keys():
+            raise Exception((
+                'Invalid value for this flag. Expected format is: '
+                '--parse-version=[major|minor|patch]'
+            ))
+        elif parse_version:
+            version = find_match_in_version(
+                version_regex[parse_version], version
+            )
         replacement = version
     else:
         replacement = command_args['--replacement']

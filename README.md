@@ -38,7 +38,7 @@ Consider a `_service` file that includes the following:
   <param name="file">mariadb-image.kiwi</param>
   <param name="regex">%%TAG%%</param>
   <param name="package">mariadb</param>
-  <param name="match">(\d+(\.\d+){0,1})</param>
+  <param name="parse-version">minor</param>
 </service>
 ```
 
@@ -46,12 +46,11 @@ The service in this case would look for the `mariadb` package in the build
 environment, get its version, and try to replace any occurrence of `%%TAG%%`
 in `mariadb-imgae.kiwi` file with the `mariadb` package version.
 
-The `match` parameter is the pattern match that is applied over the package
-version string. The first group matching the regular expression is the string
-used for the ocurrence replacement. In this concrete case the pattern tries to
-match `<MAJOR.MINOR>` version style. So in case `mariadb` version was
-something like `10.3.4_git_r125` only the `10.3` part would be used as the
-replacement string.
+The `parse-version` states to use only up to the minor version part for a given
+versio string. For instance, in this specific case, the service will
+apply the `^(\d+(\.\d+){0,1})` regular expression and use only the first match.
+In case `mariadb` version was `10.3.4~git_r154` only the `10.3` part would be
+used as the replacement string.
 
 This service is mainly designed to work in `buildtime` mode, so it is applied
 inside the build environment just before the start of the build.
