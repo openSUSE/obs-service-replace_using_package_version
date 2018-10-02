@@ -38,12 +38,8 @@ class TestRegexReplacePackageVersion(object):
         assert match == '0.0'
         match = find_match_in_version('^(\d+(\.\d+){0,1})', '234~rev+af232f')
         assert match == '234'
-        try:
-            match = find_match_in_version(
-                '^(\d+(\.\d+){0,1})', 'as234~rev+af232f'
-            )
-        except Exception as e:
-            assert 'No match found for' in str(e)
+        match = find_match_in_version('^(\d+(\.\d+){0,1})', 'as234~rev+af232f')
+        assert match == 'as234~rev+af232f'
 
     @patch((
         'replaceUsingPackageVersion.'

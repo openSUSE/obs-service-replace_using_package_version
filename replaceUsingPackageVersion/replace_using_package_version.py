@@ -114,8 +114,7 @@ def find_package_version(package, rpm_dir):
 def find_match_in_version(regexpr, version):
     search = re.search(regexpr, version)
     if search is None:
-        raise Exception(
-            'No match found for {0} in {1}'.format(regexpr, version))
+        return version
     else:
         return search.group(1)
 
