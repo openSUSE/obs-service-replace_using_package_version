@@ -1,7 +1,6 @@
 coverage
 docopt
 flake8
-pycodestyle
 pytest
 pytest-cov
 tox

@@ -4,6 +4,7 @@ from mock import patch, mock_open, call, Mock
 from replaceUsingPackageVersion.replace_using_package_version import (
     apply_regex_to_file,
     find_package_version,
+    find_match_in_version,
     main,
     run_command,
     init
@@ -29,6 +30,18 @@ class TestRegexReplacePackageVersion(object):
             'this is CHANGED new line\n'
             'and yet CHANGED line\n'
         ))
+
+    def test_find_match_in_version(self):
+        match = find_match_in_version('^(\d+)', '0.0.1')
+        assert match == '0'
+        match = find_match_in_version('^(\d+(\.\d+){0,1})', '0.0.1~rev+af232f')
+        assert match == '0.0'
+        match = find_match_in_version('^(\d+(\.\d+){0,2})', '0.0.1~rev+af232f')
+        assert match == '0.0.1'
+        match = find_match_in_version('^(\d+(\.\d+){0,2})', '234~rev+af232f')
+        assert match == '234'
+        match = find_match_in_version('^(\d+(\.\d+){0,1})', 'as234~rev+af232f')
+        assert match == 'as234~rev+af232f'
 
     @patch((
         'replaceUsingPackageVersion.'
@@ -128,7 +141,8 @@ class TestRegexReplacePackageVersion(object):
             '--package': 'package',
             '--file': 'file',
             '--outdir': 'outdir',
-            '--regex': 'regex'
+            '--regex': 'regex',
+            '--parse-version': 'minor'
         }
         mock_find_pkg.return_value = '0.0.1'
         main()
@@ -136,8 +150,77 @@ class TestRegexReplacePackageVersion(object):
             'package', './repos'
         )
         mock_apply_regex.assert_called_once_with(
-            'file', 'outdir/file', 'regex', '0.0.1'
+            'file', 'outdir/file', 'regex', '0.0'
         )
+
+    @patch((
+        'replaceUsingPackageVersion.'
+        'replace_using_package_version.find_match_in_version'
+    ))
+    @patch((
+        'replaceUsingPackageVersion.'
+        'replace_using_package_version.apply_regex_to_file'
+    ))
+    @patch((
+        'replaceUsingPackageVersion.'
+        'replace_using_package_version.find_package_version'
+    ))
+    @patch('docopt.docopt')
+    @patch('os.path.isdir')
+    @patch('os.path.isfile')
+    def test_main_package_parse_version(
+        self, mock_isfile, mock_isdir, mock_docopt,
+        mock_find_pkg, mock_apply_regex, mock_match_version
+    ):
+        mock_isdir.return_value = True
+        mock_isfile.return_value = True
+        mock_docopt.return_value = {
+            '--package': 'package',
+            '--file': 'file',
+            '--outdir': 'outdir',
+            '--regex': 'regex',
+            '--parse-version': 'minor'
+        }
+        mock_find_pkg.return_value = '0.0.1'
+        mock_match_version.return_value = '0.0'
+        main()
+        mock_find_pkg.assert_called_once_with(
+            'package', './repos'
+        )
+        mock_apply_regex.assert_called_once_with(
+            'file', 'outdir/file', 'regex', '0.0'
+        )
+        mock_match_version.assert_called_once_with(
+            '^(\d+(\.\d+){0,1})', '0.0.1'
+        )
+
+    @patch((
+        'replaceUsingPackageVersion.'
+        'replace_using_package_version.find_package_version'
+    ))
+    @patch('docopt.docopt')
+    @patch('os.path.isdir')
+    @patch('os.path.isfile')
+    def test_main_package_parse_version_invalid_argument(
+        self, mock_isfile, mock_isdir, mock_docopt, mock_find_pkg
+    ):
+        mock_find_pkg.return_value = '1.34.2'
+        mock_isdir.return_value = True
+        mock_isfile.return_value = True
+        mock_docopt.return_value = {
+            '--package': 'package',
+            '--file': 'file',
+            '--outdir': 'outdir',
+            '--regex': 'regex',
+            '--parse-version': 'invalid-value'
+        }
+        exception = False
+        try:
+            main()
+        except Exception as e:
+            assert 'Invalid value for this flag.' in str(e)
+            exception = True
+        assert exception
 
     @patch((
         'replaceUsingPackageVersion.'
