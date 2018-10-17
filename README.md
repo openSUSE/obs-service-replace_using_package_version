@@ -44,7 +44,7 @@ Consider a `_service` file that includes the following:
 
 The service in this case would look for the `mariadb` package in the build
 environment, get its version, and try to replace any occurrence of `%%TAG%%`
-in `mariadb-imgae.kiwi` file with the `mariadb` package version.
+in `mariadb-image.kiwi` file with the `mariadb` package version.
 
 The `parse-version` states to use only up to the minor version part for a given
 versio string. For instance, in this specific case, the service will
