@@ -36,8 +36,9 @@ Options:
     --replacement=REPLACEMENT   : replacement string for any match
     --regex=REGEX               : regular expression for parsing file
     --parse-version=DEPTH       : parse the package version string to match
-                                    major.minor.patch format. It can be set
-                                    to 'major', 'minor' or 'patch'.
+                                    major.minor.patch.patch_update format. 
+                                    It can be set to 'major', 'minor', 
+                                    'patch, patch_update and offset.
 """
 import docopt
 import re
@@ -56,7 +57,9 @@ def main():
     version_regex = {
         'major': '^(\d+)',
         'minor': '^(\d+(\.\d+){0,1})',
-        'patch': '^(\d+(\.\d+){0,2})'
+        'patch': '^(\d+(\.\d+){0,2})',
+        'patch_update': '^(\d+(\.\d+){0,3})',
+        'offset': '^(?:\d+(?:\.\d+){0,2})\+(?:git|svn|cvs)(\d+)'
     }
 
     command_args = docopt.docopt(__doc__)
