@@ -46,11 +46,29 @@ The service in this case would look for the `mariadb` package in the build
 environment, get its version, and try to replace any occurrence of `%%TAG%%`
 in `mariadb-image.kiwi` file with the `mariadb` package version.
 
-The `parse-version` states to use only up to the minor version part for a given
-versio string. For instance, in this specific case, the service will
-apply the `^(\d+(\.\d+){0,1})` regular expression and use only the first match.
+The `parse-version` could be skipped or if parameter's regular expression 
+doesn't match then full package version is returned.
+
+Possible `parse-version` values and it returned value in X.Y.Z.N version:
+
+* `major`: `^(\d+)`, returns X
+* `minor`: `^(\d+(\.\d+){0,1})`, returns X.Y
+* `patch`: `^(\d+(\.\d+){0,2})`, returns X.Y.Z
+* `patch_update`: `^(\d+(\.\d+){0,3})`, returns X.Y.Z.N
+* `offset`: `^(?:\d+(?:\.\d+){0,3})[+-.~](?:git|svn|cvs)(\d+)`
+  * returns X.Y.Z.N as it doesn't match
+  * but if you have offset in your version X.Y.Z+git5 it returns 5
+* `parse-version` is absent or parameter doesn't match, returns X.Y.Z.N
+
+For instance, in this specific case, the service will apply the 
+`^(\d+(\.\d+){0,1})` regular expression and use only the first match.
 In case `mariadb` version was `10.3.4~git_r154` only the `10.3` part would be
 used as the replacement string.
+
+You could use this service multiple times in your `_service` file so `offset` 
+parameter could be used in case you need more unique identification. 
+For example %%TAG%%.%%OFFSET%% if you add another service with `regex` "%%OFFSET%%"
+and `parse-version` "offset".
 
 This service is mainly designed to work in `buildtime` mode, so it is applied
 inside the build environment just before the start of the build.

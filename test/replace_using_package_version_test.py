@@ -7,7 +7,8 @@ from replaceUsingPackageVersion.replace_using_package_version import (
     find_match_in_version,
     main,
     run_command,
-    init
+    init,
+    version_regex
 )
 
 open_to_patch = '{0}.open'.format(
@@ -32,16 +33,62 @@ class TestRegexReplacePackageVersion(object):
         ))
 
     def test_find_match_in_version(self):
-        match = find_match_in_version('^(\d+)', '0.0.1')
+        match = find_match_in_version(version_regex['major'], '0.0.1')
         assert match == '0'
-        match = find_match_in_version('^(\d+(\.\d+){0,1})', '0.0.1~rev+af232f')
+        match = find_match_in_version(
+            version_regex['minor'],
+            '0.0.1~rev+af232f')
         assert match == '0.0'
-        match = find_match_in_version('^(\d+(\.\d+){0,2})', '0.0.1~rev+af232f')
+
+        match = find_match_in_version(
+            version_regex['patch'],
+            '0.0.1~rev+af232f')
         assert match == '0.0.1'
-        match = find_match_in_version('^(\d+(\.\d+){0,2})', '234~rev+af232f')
+        match = find_match_in_version(
+            version_regex['patch'],
+            '234~rev+af232f')
         assert match == '234'
-        match = find_match_in_version('^(\d+(\.\d+){0,1})', 'as234~rev+af232f')
+
+        match = find_match_in_version(
+            version_regex['minor'], 'as234~rev+af232f')
         assert match == 'as234~rev+af232f'
+
+        match = find_match_in_version(
+            version_regex['patch_update'], '234~rev+af232f')
+        assert match == '234'
+        match = find_match_in_version(
+            version_regex['patch_update'],
+            '14.2.1.468+g994fd9e0cc')
+        assert match == '14.2.1.468'
+        match = find_match_in_version(
+            version_regex['patch_update'],
+            '0.0.1~rev+af232f')
+        assert match == '0.0.1'
+
+        match = find_match_in_version(
+            version_regex['offset'],
+            '3.14.1+git5.g9265358')
+        assert match == '5'
+        match = find_match_in_version(
+            version_regex['offset'],
+            '3.14.1+svn592')
+        assert match == '592'
+        match = find_match_in_version(
+            version_regex['offset'],
+            '2.14.1+cvs20130621')
+        assert match == '20130621'
+        match = find_match_in_version(
+            version_regex['offset'],
+            '0.0.1~rev+af232f')
+        assert match == '0.0.1~rev+af232f'
+        match = find_match_in_version(
+            version_regex['offset'],
+            '234~rev+af232f')
+        assert match == '234~rev+af232f'
+        match = find_match_in_version(
+            version_regex['offset'],
+            '14.2.1.468+g994fd9e0cc')
+        assert match == '14.2.1.468+g994fd9e0cc'
 
     @patch((
         'replaceUsingPackageVersion.'
@@ -191,7 +238,7 @@ class TestRegexReplacePackageVersion(object):
             'file', 'outdir/file', 'regex', '0.0'
         )
         mock_match_version.assert_called_once_with(
-            '^(\d+(\.\d+){0,1})', '0.0.1'
+            version_regex['minor'], '0.0.1'
         )
 
     @patch((
