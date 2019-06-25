@@ -46,6 +46,14 @@ import os
 import subprocess
 from pkg_resources import parse_version
 
+version_regex = {
+    'major': r'^(\d+)',
+    'minor': r'^(\d+(\.\d+){0,1})',
+    'patch': r'^(\d+(\.\d+){0,2})',
+    'patch_update': r'^(\d+(\.\d+){0,3})',
+    'offset': r'^(?:\d+(?:\.\d+){0,3})[+-.~](?:git|svn|cvs)(\d+)'
+}
+
 
 def main():
     """
@@ -53,14 +61,6 @@ def main():
     """
     # TODO: probably there is a better way to set the repositories path
     rpm_dir = './repos'
-
-    version_regex = {
-        'major': r'^(\d+)',
-        'minor': r'^(\d+(\.\d+){0,1})',
-        'patch': r'^(\d+(\.\d+){0,2})',
-        'patch_update': r'^(\d+(\.\d+){0,3})',
-        'offset': r'^(?:\d+(?:\.\d+){0,2})\+(?:git|svn|cvs)(\d+)'
-    }
 
     command_args = docopt.docopt(__doc__)
 
@@ -82,7 +82,7 @@ def main():
         if parse_version and parse_version not in version_regex.keys():
             raise Exception((
                 'Invalid value for this flag. Expected format is: '
-                '--parse-version=[major|minor|patch]'
+                '--parse-version=[major|minor|patch|patch_update|offset]'
             ))
         elif parse_version:
             version = find_match_in_version(
