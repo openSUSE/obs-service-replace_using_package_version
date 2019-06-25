@@ -32,43 +32,60 @@ class TestRegexReplacePackageVersion(object):
         ))
 
     def test_find_match_in_version(self):
-        match = find_match_in_version('^(\d+)', '0.0.1')
+        match = find_match_in_version(r'^(\d+)', '0.0.1')
         assert match == '0'
-        match = find_match_in_version('^(\d+(\.\d+){0,1})', '0.0.1~rev+af232f')
+        match = find_match_in_version(
+            r'^(\d+(\.\d+){0,1})',
+            '0.0.1~rev+af232f')
         assert match == '0.0'
-        
-        match = find_match_in_version('^(\d+(\.\d+){0,2})', '0.0.1~rev+af232f')
+
+        match = find_match_in_version(
+            r'^(\d+(\.\d+){0,2})',
+            '0.0.1~rev+af232f')
         assert match == '0.0.1'
-        match = find_match_in_version('^(\d+(\.\d+){0,2})', '234~rev+af232f')
+        match = find_match_in_version(
+            r'^(\d+(\.\d+){0,2})',
+            '234~rev+af232f')
         assert match == '234'
-        
-        match = find_match_in_version('^(\d+(\.\d+){0,1})', 'as234~rev+af232f')
+
+        match = find_match_in_version(
+            r'^(\d+(\.\d+){0,1})', 'as234~rev+af232f')
         assert match == 'as234~rev+af232f'
-        
-        match = find_match_in_version('^(\d+(\.\d+){0,3})', '234~rev+af232f')
+
+        match = find_match_in_version(r'^(\d+(\.\d+){0,3})', '234~rev+af232f')
         assert match == '234'
-        match = find_match_in_version('^(\d+(\.\d+){0,3})', '14.2.1.468+g994fd9e0cc')
+        match = find_match_in_version(
+            r'^(\d+(\.\d+){0,3})',
+            '14.2.1.468+g994fd9e0cc')
         assert match == '14.2.1.468'
-        match = find_match_in_version('^(\d+(\.\d+){0,3})', '0.0.1~rev+af232f')
+        match = find_match_in_version(
+            r'^(\d+(\.\d+){0,3})',
+            '0.0.1~rev+af232f')
         assert match == '0.0.1'
-        
-        match = find_match_in_version('^(?:\d+(?:\.\d+){0,2})\+(?:git|svn|cvs)(\d+)', 
-                '3.14.1+git5.g9265358')
+
+        match = find_match_in_version(
+            r'^(?:\d+(?:\.\d+){0,2})\+(?:git|svn|cvs)(\d+)',
+            '3.14.1+git5.g9265358')
         assert match == '5'
-        match = find_match_in_version('^(?:\d+(?:\.\d+){0,2})\+(?:git|svn|cvs)(\d+)', 
-                '3.14.1+svn592')
+        match = find_match_in_version(
+            r'^(?:\d+(?:\.\d+){0,2})\+(?:git|svn|cvs)(\d+)',
+            '3.14.1+svn592')
         assert match == '592'
-        match = find_match_in_version('^(?:\d+(?:\.\d+){0,2})\+(?:git|svn|cvs)(\d+)', 
-                '2.14.1+cvs20130621')
+        match = find_match_in_version(
+            r'^(?:\d+(?:\.\d+){0,2})\+(?:git|svn|cvs)(\d+)',
+            '2.14.1+cvs20130621')
         assert match == '20130621'
-        match = find_match_in_version('^(?:\d+(?:\.\d+){0,2})\+(?:git|svn|cvs)(\d+)', 
-                '0.0.1~rev+af232f')
+        match = find_match_in_version(
+            r'^(?:\d+(?:\.\d+){0,2})\+(?:git|svn|cvs)(\d+)',
+            '0.0.1~rev+af232f')
         assert match == '0.0.1~rev+af232f'
-        match = find_match_in_version('^(?:\d+(?:\.\d+){0,2})\+(?:git|svn|cvs)(\d+)', 
-                '234~rev+af232f')
+        match = find_match_in_version(
+            r'^(?:\d+(?:\.\d+){0,2})\+(?:git|svn|cvs)(\d+)',
+            '234~rev+af232f')
         assert match == '234~rev+af232f'
-        match = find_match_in_version('^(?:\d+(?:\.\d+){0,2})\+(?:git|svn|cvs)(\d+)', 
-                '14.2.1.468+g994fd9e0cc')
+        match = find_match_in_version(
+            r'^(?:\d+(?:\.\d+){0,2})\+(?:git|svn|cvs)(\d+)',
+            '14.2.1.468+g994fd9e0cc')
         assert match == '14.2.1.468+g994fd9e0cc'
 
     @patch((
@@ -219,7 +236,7 @@ class TestRegexReplacePackageVersion(object):
             'file', 'outdir/file', 'regex', '0.0'
         )
         mock_match_version.assert_called_once_with(
-            '^(\d+(\.\d+){0,1})', '0.0.1'
+            r'^(\d+(\.\d+){0,1})', '0.0.1'
         )
 
     @patch((
