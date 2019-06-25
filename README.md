@@ -55,9 +55,9 @@ Possible `parse-version` values and it returned value in X.Y.Z.N version:
 * `minor`: `^(\d+(\.\d+){0,1})`, returns X.Y
 * `patch`: `^(\d+(\.\d+){0,2})`, returns X.Y.Z
 * `patch_update`: `^(\d+(\.\d+){0,3})`, returns X.Y.Z.N
-* `offset`: `^(?:\d+(?:\.\d+){0,2})\+(?:git|svn|cvs)(\d+)`
+* `offset`: `^(?:\d+(?:\.\d+){0,3})[+-.~](?:git|svn|cvs)(\d+)`
   * returns X.Y.Z.N as it doesn't match
-  * but if you have offset in your version X.Y.Z+git5 it return 5
+  * but if you have offset in your version X.Y.Z+git5 it returns 5
 * `parse-version` is absent or parameter doesn't match, returns X.Y.Z.N
 
 For instance, in this specific case, the service will apply the 
