@@ -1,7 +1,7 @@
 import sys
 from mock import patch, mock_open, call, Mock
 
-from replaceUsingPackageVersion.replace_using_package_version import (
+from replace_using_package_version.replace_using_package_version import (
     apply_regex_to_file,
     find_package_version,
     find_match_in_version,
@@ -91,7 +91,7 @@ class TestRegexReplacePackageVersion(object):
         assert match == '14.2.1.468+g994fd9e0cc'
 
     @patch((
-        'replaceUsingPackageVersion.'
+        'replace_using_package_version.'
         'replace_using_package_version.run_command'
     ))
     def test_find_package_version(self, mock_run):
@@ -103,7 +103,7 @@ class TestRegexReplacePackageVersion(object):
         ])
 
     @patch((
-        'replaceUsingPackageVersion.'
+        'replace_using_package_version.'
         'replace_using_package_version.run_command'
     ))
     @patch('os.walk')
@@ -134,7 +134,7 @@ class TestRegexReplacePackageVersion(object):
         ])
 
     @patch((
-        'replaceUsingPackageVersion.'
+        'replace_using_package_version.'
         'replace_using_package_version.run_command'
     ))
     @patch('os.walk')
@@ -168,11 +168,11 @@ class TestRegexReplacePackageVersion(object):
         ])
 
     @patch((
-        'replaceUsingPackageVersion.'
+        'replace_using_package_version.'
         'replace_using_package_version.apply_regex_to_file'
     ))
     @patch((
-        'replaceUsingPackageVersion.'
+        'replace_using_package_version.'
         'replace_using_package_version.find_package_version'
     ))
     @patch('docopt.docopt')
@@ -201,15 +201,15 @@ class TestRegexReplacePackageVersion(object):
         )
 
     @patch((
-        'replaceUsingPackageVersion.'
+        'replace_using_package_version.'
         'replace_using_package_version.find_match_in_version'
     ))
     @patch((
-        'replaceUsingPackageVersion.'
+        'replace_using_package_version.'
         'replace_using_package_version.apply_regex_to_file'
     ))
     @patch((
-        'replaceUsingPackageVersion.'
+        'replace_using_package_version.'
         'replace_using_package_version.find_package_version'
     ))
     @patch('docopt.docopt')
@@ -242,7 +242,7 @@ class TestRegexReplacePackageVersion(object):
         )
 
     @patch((
-        'replaceUsingPackageVersion.'
+        'replace_using_package_version.'
         'replace_using_package_version.find_package_version'
     ))
     @patch('docopt.docopt')
@@ -270,7 +270,7 @@ class TestRegexReplacePackageVersion(object):
         assert exception
 
     @patch((
-        'replaceUsingPackageVersion.'
+        'replace_using_package_version.'
         'replace_using_package_version.apply_regex_to_file'
     ))
     @patch('docopt.docopt')
@@ -336,7 +336,7 @@ class TestRegexReplacePackageVersion(object):
             assert 'Command "dummycmd arg1" failed' in str(e)
 
     @patch((
-        'replaceUsingPackageVersion.'
+        'replace_using_package_version.'
         'replace_using_package_version.main'
     ))
     def test_main(self, mock_main):
