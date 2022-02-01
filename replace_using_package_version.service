@@ -22,7 +22,7 @@ If set to major only the first numeric value will be used as the
 replacement (e.g. if version is 3.1.3 only 3 will be used). If set to minor
 only the first and seconf numeric values separated by a dot will be used
 (e.g. if version is 3.1~git_r125 only 3.1 will be used). If set to patch
-it will reach up to the first three numeric values separated with a dots.
+it will reach up to the first three numeric values separated with a dots.</description>
   </parameter>
   <parameter name="replacement">
     <description>This parameter is an alternative to the package parameter,
