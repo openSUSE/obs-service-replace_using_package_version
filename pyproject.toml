@@ -1,0 +1,42 @@
+[tool.poetry]
+name = "replace_using_package_version"
+version = "0.0.3"
+description = "An OBS service: Replaces a regex  with the version value of a package"
+authors = ["David Cassany <dcassany@suse.com>"]
+license = "GPL-3.0-or-later"
+classifiers = [
+   "Intended Audience :: Developers",
+   "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
+   "Operating System :: POSIX :: Linux",
+   "Topic :: Development :: Tools :: Building",
+]
+include = [
+    "replace_using_package_version.service",
+]
+
+[tool.poetry.dependencies]
+python = "^3.7"
+docopt = ">= 0.6.2"
+
+[tool.poetry.dev-dependencies]
+coverage = "^6.3"
+flake8 = "^4.0.1"
+pytest = "^6.2.5"
+pytest-cov = "^3.0.0"
+tox = "^3.24.5"
+mock = "^4.0.3"
+bumpversion = "^0.6.0"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.coverage.run]
+branch = true
+
+[tool.coverage.report]
+show_missing = true
+term-missing = true
+
+[tool.poetry.scripts]
+replace_using_package_version = "replace_using_package_version.replace_using_package_version:main"
