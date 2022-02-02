@@ -24,7 +24,8 @@ replace_with_package_version.py
 
 Usage:
     replace_using_package_version.py -h
-    replace_using_package_version.py --file=FILE --regex=REGEX --outdir=DIR
+    replace_using_package_version.py --regex=REGEX --outdir=DIR
+        [--file=FILE]
         (--package=PACKAGE | --replacement=REPLACEMENT)
         [--parse-version=DEPTH]
 
@@ -32,14 +33,18 @@ Options:
     -h,--help                   : show this help message
     --outdir=DIR                : output directory
     --file=FILE                 : file to update
+                                    The default build recipe file
+                                    (e.g. Dockerfile) is used when this
+                                    parameter is omitted.
     --package=PACKAGE           : package to check
     --replacement=REPLACEMENT   : replacement string for any match
     --regex=REGEX               : regular expression for parsing file
     --parse-version=DEPTH       : parse the package version string to match
                                     major.minor.patch.patch_update format.
                                     It can be set to 'major', 'minor',
-                                    'patch, patch_update and offset.
+                                    'patch', 'patch_update' and 'offset'.
 """
+from typing import Optional
 import docopt
 import re
 import os
@@ -55,6 +60,42 @@ version_regex = {
 }
 
 
+def guess_recipe_filename_from_env() -> Optional[str]:
+    """Try to infer the default build recipe file from the current build
+    environment.
+
+    The `build <https://github.com/openSUSE/obs-build>`_ script sets the
+    environment variable ``BUILD_DIST`` to the location of the
+    :file:`build.dist`. The same directory contains the file
+    :file:`build.data`, which contains environment variables to be sourced via
+    :command:`bash` or :command:`sh`. One of these is ``RECIPEFILE`` which
+    contains the name of the current build recipe, with the tiny catch that it
+    will be called :file:`_service:actual_name` although the build script
+    already renamed the actual file to :file:`actual_name`.
+
+    """
+    build_dist = os.getenv("BUILD_DIST")
+    if build_dist is None or build_dist[-5:] != ".dist":
+        return None
+
+    # Extract the variable RECIPEFILE from `build.data`
+    recipefile = None
+    with open(build_dist[:-5] + ".data") as data:
+        for line in data:
+            # lines are:
+            # FOOBAR='baz'
+            # => need to also remove the ' or " from the second column
+            var, val = line.strip().split("=")
+            if var == "RECIPEFILE":
+                recipefile = val.replace("'", "").replace('"', '')
+
+    if recipefile is None:
+        return None
+
+    # strip the leading `_service:` part
+    return recipefile.split(":")[-1]
+
+
 def main():
     """
     main-entry point for program, expects dict with arguments from docopt()
@@ -64,17 +105,26 @@ def main():
 
     command_args = docopt.docopt(__doc__)
 
-    if not os.path.isfile(command_args['--file']):
-        raise Exception('File {0} not found'.format(command_args['--file']))
+    src_file = command_args['--file']
+
+    if src_file is None:
+        src_file = guess_recipe_filename_from_env()
+        if src_file is None:
+            raise RuntimeError(
+                "No file was provided and could not infer a default build file"
+            )
+
+    if not os.path.isfile(src_file):
+        raise RuntimeError('File {0} not found'.format(src_file))
+
     if not os.path.isdir(command_args['--outdir']):
         raise Exception(
             'Output directory {0} not found'.format(command_args['--outdir'])
         )
 
-    filecopy = os.sep.join([
-        command_args['--outdir'],
-        os.path.basename(command_args['--file'])
-    ])
+    filecopy = os.path.join(
+        command_args['--outdir'], os.path.basename(src_file)
+    )
 
     if command_args['--package']:
         parse_version = command_args['--parse-version']
@@ -93,7 +143,7 @@ def main():
         replacement = command_args['--replacement']
 
     apply_regex_to_file(
-        command_args['--file'],
+        src_file,
         filecopy,
         command_args['--regex'],
         replacement

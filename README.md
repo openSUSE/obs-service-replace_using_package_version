@@ -35,7 +35,7 @@ Consider a `_service` file that includes the following:
 
 ```xml
 <service name="replace_using_package_version" mode="buildtime">
-  <param name="file">mariadb-image.kiwi</param>
+  <param name="file">mariadb-setup.sh</param>
   <param name="regex">%%TAG%%</param>
   <param name="package">mariadb</param>
   <param name="parse-version">minor</param>
@@ -44,7 +44,10 @@ Consider a `_service` file that includes the following:
 
 The service in this case would look for the `mariadb` package in the build
 environment, get its version, and try to replace any occurrence of `%%TAG%%`
-in `mariadb-image.kiwi` file with the `mariadb` package version.
+in the `mariadb-setup.sh` file with the `mariadb` package version.
+
+The `file` parameter is optional and when omitted it will default to the
+package's build recipe file, e.g. `Dockerfile` or `mariadb-image.kiwi`.
 
 The `parse-version` could be skipped or if parameter's regular expression 
 doesn't match then full package version is returned.
