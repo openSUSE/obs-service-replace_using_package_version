@@ -1,8 +1,0 @@
-coverage
-docopt
-flake8
-pytest
-pytest-cov
-tox
-mock
-bumpversion
