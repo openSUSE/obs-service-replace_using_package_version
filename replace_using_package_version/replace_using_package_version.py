@@ -27,6 +27,7 @@ Usage:
     replace_using_package_version.py --file=FILE --regex=REGEX --outdir=DIR
         (--package=PACKAGE | --replacement=REPLACEMENT)
         [--parse-version=DEPTH]
+    replace_using_package_version.py --packages=PACKAGES --archive=ARCHIVE --outdir=DIR
 
 Options:
     -h,--help                   : show this help message
@@ -40,11 +41,14 @@ Options:
                                     It can be set to 'major', 'minor',
                                     'patch, patch_update and offset.
 """
+from typing import Any, Dict
 import docopt
 import re
 import os
 import subprocess
+import shutil
 from pkg_resources import parse_version
+from pathlib import Path
 
 version_regex = {
     'major': r'^(\d+)',
@@ -54,16 +58,11 @@ version_regex = {
     'offset': r'^(?:\d+(?:\.\d+){0,3})[+-.~](?:git|svn|cvs)(\d+)'
 }
 
+# TODO: probably there is a better way to set the repositories path
+RPM_DIR = './repos'
 
-def main():
-    """
-    main-entry point for program, expects dict with arguments from docopt()
-    """
-    # TODO: probably there is a better way to set the repositories path
-    rpm_dir = './repos'
 
-    command_args = docopt.docopt(__doc__)
-
+def extract_version(command_args: Dict[str, Any]) -> None:
     if not os.path.isfile(command_args['--file']):
         raise Exception('File {0} not found'.format(command_args['--file']))
     if not os.path.isdir(command_args['--outdir']):
@@ -78,7 +77,7 @@ def main():
 
     if command_args['--package']:
         parse_version = command_args['--parse-version']
-        version = find_package_version(command_args['--package'], rpm_dir)
+        version = find_package_version(command_args['--package'], RPM_DIR)
         if parse_version and parse_version not in version_regex.keys():
             raise Exception((
                 'Invalid value for this flag. Expected format is: '
@@ -98,6 +97,46 @@ def main():
         command_args['--regex'],
         replacement
     )
+
+
+def repack_rpms(command_args) -> None:
+    packages = command_args["--packages"].split(",")
+    archive = os.path.splitext(command_args["--archive"])
+
+    for pkg in packages:
+        for root, _, files in os.walk(RPM_DIR):
+            packages = [
+                f for f in files if f.endswith('rpm') and pkg in f
+            ]
+            for pkg in packages:
+                rpm_file = os.path.realpath(os.path.join(root, pkg))
+                rpm2cpio = subprocess.Popen(["rpm2cpio", rpm_file], stdout=subprocess.PIPE)
+                Path("./archive_dir", ).mkdir(parents=True, exist_ok=True)
+                res = subprocess.run(
+                    ["cpio", "-idmv"],
+                    stdin=rpm2cpio.stdout,
+                    stdout=subprocess.PIPE,
+                    stderr=subprocess.PIPE,
+                    check=True,
+                    cwd="archive_dir"
+                )
+                rpm2cpio.wait()
+                res.check_returncode()
+
+    shutil.make_archive(archive[0], archive[1].replace(".", ""), root_dir="archive_dir")
+    shutil.copy(command_args["--archive"], os.path.join(command_args["--outdir"], command_args["--archive"]))
+
+
+def main():
+    """
+    main-entry point for program, expects dict with arguments from docopt()
+    """
+    command_args = docopt.docopt(__doc__)
+
+    if command_args.get("--archive", None) is not None and command_args.get("--archive", None) is not None:
+        repack_rpms(command_args)
+    else:
+        extract_version(command_args)
 
 
 def apply_regex_to_file(input_file, output_file, regex, replacement):
