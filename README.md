@@ -1,10 +1,11 @@
 # obs-service-replace_using_package_version
+
+[![CI](https://github.com/openSUSE/obs-service-replace_using_package_version/actions/workflows/ci.yml/badge.svg)](https://github.com/openSUSE/obs-service-replace_using_package_version/actions/workflows/ci.yml)
+
 An OBS service to replace a regex with some package version available
 in the build time environment or repositories.
 
 This service makes sense mostly in `buildtime` mode.
-
-Travis CI: [![Build Status](https://travis-ci.org/openSUSE/obs-service-replace_using_package_version.svg?branch=master)](https://travis-ci.org/openSUSE/obs-service-replace_using_package_version)
 
 ## Development
 

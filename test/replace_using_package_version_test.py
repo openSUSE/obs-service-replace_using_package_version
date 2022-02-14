@@ -1,5 +1,5 @@
 import sys
-from mock import patch, mock_open, call, Mock
+from mock import patch, mock_open, call
 
 from replace_using_package_version.replace_using_package_version import (
     apply_regex_to_file,
@@ -316,24 +316,10 @@ class TestRegexReplacePackageVersion(object):
         except Exception as e:
             assert 'Output directory outdir not found' in str(e)
 
-    @patch('subprocess.Popen')
-    def test_run_command(self, mock_subprocess):
-        mock_process = Mock()
-        mock_process.communicate.return_value = (b'stdout', b'stderr')
-        mock_process.returncode = 0
-        mock_subprocess.return_value = mock_process
+    @patch('subprocess.check_output')
+    def test_run_command(self, mock_check_output):
+        mock_check_output.return_value = b'stdout'
         assert run_command(['/bin/dummycmd', 'arg1']) == 'stdout'
-
-    @patch('subprocess.Popen')
-    def test_run_command_failure(self, mock_subprocess):
-        mock_process = Mock()
-        mock_process.communicate.return_value = (None, None)
-        mock_process.returncode = 1
-        mock_subprocess.return_value = mock_process
-        try:
-            run_command(['dummycmd', 'arg1']) == 'stdout'
-        except Exception as e:
-            assert 'Command "dummycmd arg1" failed' in str(e)
 
     @patch((
         'replace_using_package_version.'

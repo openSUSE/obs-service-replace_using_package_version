@@ -45,6 +45,7 @@ import re
 import os
 import subprocess
 from pkg_resources import parse_version
+from typing import List
 
 version_regex = {
     'major': r'^(\d+)',
@@ -137,24 +138,8 @@ def find_match_in_version(regexpr, version):
         return search.group(1)
 
 
-def run_command(command):
-    process = subprocess.Popen(
-        command,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
-        env=os.environ
-    )
-    output, error = process.communicate()
-    if process.returncode != 0:
-        if not error:
-            error = bytes(b'(no output on stderr)')
-        if not output:
-            output = bytes(b'(no output on stdout)')
-        raise Exception((
-            'Command "{0}" failed\n\tstdout: {1}\n'
-            '\tstderr: {2}'
-        ).format(' '.join(command), output.decode(), error.decode()))
-    return output.decode()
+def run_command(command: List[str]) -> str:
+    return subprocess.check_output(command, stderr=subprocess.STDOUT).decode()
 
 
 def get_pkg_name_from_rpm(rpm_file):
