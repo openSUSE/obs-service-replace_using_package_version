@@ -9,14 +9,27 @@ from replace_using_package_version.replace_using_package_version import (
 TESTFILE = "/opt/testfile"
 
 CONTAINERFILE = rf"""RUN zypper -n in python3-pip find && zypper -n download apache2 python3
-WORKDIR /opt/
+WORKDIR /.build-srcdir/
 COPY dist/*whl /opt/
 RUN pip install /opt/*whl
 RUN echo $'This is a testfile with some replacements like %%MINOR%%\n\
 %NEVR%\n\
 and a footer?' > {TESTFILE}
-RUN mkdir -p /opt/repos/ && mv $(find /var/cache/zypp/ -name 'apache*') /opt/repos/
+
+RUN mkdir -p /.build-srcdir/repos/ && mv $(find /var/cache/zypp/ -name 'apache*') /.build-srcdir/repos/
+
+RUN mkdir /.build/ && echo $'RECIPEFILE="Dockerfile"\n\
+BUILD_JOBS="12"\n\
+BUILD_ARCH="x86_64:i686:i586:i486:i386"\n\
+BUILD_RPMS=""\n\
+BUILD_DIST="/.build/build.dist"' > /.build/build.data
+
+RUN echo $'FROM registry.opensuse.org/opensuse/tumbleweed\n\
+LABEL VERSION="%%VERSION%%"' > /.build-srcdir/Dockerfile
+
+ENV BUILD_DIST="/.build/build.dist"
 """
+
 TUMBLEWEED = DerivedContainer(
     base="registry.opensuse.org/opensuse/tumbleweed", containerfile=CONTAINERFILE
 )
@@ -110,12 +123,34 @@ def test_version_replacement_from_local_file(
         [0],
         f"replace_using_package_version --file {TESTFILE} --outdir /opt/ --regex='%NEVR%' --package='apache2' --parse-version='{version}'",
     )
+
+    apache2_ver = auto_container_per_test.connection.run_expect(
+        [0],
+        "rpm -q --qf '%{version}' /.build-srcdir/repos/*rpm",
+    ).stdout.strip()
+
     assert auto_container_per_test.connection.file(
         TESTFILE
     ).content_string.strip().split("\n")[1] == ".".join(
-        auto_container_per_test.connection.run_expect(
-            [0], "rpm -q --qf '%{version}' /opt/repos/*rpm"
-        )
-        .stdout.strip()
-        .split(".")[: index + 1]
+        apache2_ver.split(".")[: index + 1]
+    )
+
+
+def test_replacement_from_default_build_recipe(auto_container_per_test):
+    auto_container_per_test.connection.run_expect(
+        [0],
+        f"replace_using_package_version --outdir /opt/ --regex='%%VERSION%%' --package='apache2'",
+    )
+    apache2_ver = auto_container_per_test.connection.run_expect(
+        [0],
+        "rpm -q --qf '%{version}' /.build-srcdir/repos/*rpm",
+    ).stdout.strip()
+
+    assert (
+        auto_container_per_test.connection.file(
+            "/opt/Dockerfile"
+        ).content_string
+        == f"""FROM registry.opensuse.org/opensuse/tumbleweed\n\
+LABEL VERSION="{apache2_ver}"
+"""
     )
