@@ -20,7 +20,7 @@ docopt = ">= 0.6.2"
 
 [tool.poetry.dev-dependencies]
 coverage = "^6.0"
-flake8 = "^5.0.1"
+flake8 = "^5.0.3"
 pytest = "^7.0.1"
 pytest-cov = "^3.0.0"
 tox = "^3.25.1"
