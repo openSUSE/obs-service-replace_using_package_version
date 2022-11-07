@@ -12,7 +12,9 @@ It uses python re module syntax</description>
   </parameter>
   <parameter name="package">
     <description>This is the package which version will be used as a replacement
-for the regex. It must be included in the build as a dependency.</description>
+for the regex. If it is not found as a build dependency it will fallback to
+look for for an *.obsinfo file with the package basename. It fails if no version
+is found.</description>
   </parameter>
   <parameter name="parse-version">
     <description>Parses the package version string to match the

@@ -158,6 +158,44 @@ class TestRegexReplacePackageVersion(object):
             ])
         ])
 
+    @patch("builtins.open", new_callable=mock_open, read_data="version: 2.2.1")
+    @patch((
+        'replace_using_package_version.'
+        'replace_using_package_version.run_command'
+    ))
+    @patch('os.listdir')
+    @patch('os.walk')
+    def test_find_package_version_in_obsinfo(
+        self, mock_walk, mock_listdir, mock_run, mock_file
+    ):
+        mock_walk.return_value = [
+            ('/foo', ['bar', 'zez'], ['baz']),
+            ('/foo/bar', [], ['spam', 'package.rpm']),
+            ('/foo/zez', [], ['package.rpm', 'somefile'])
+        ]
+        mock_listdir.return_value = ['somefile', 'package.obsinfo']
+        outputs = ['another_non_matching_name', 'not_matching_name']
+
+        def cmd_output(command):
+            if '-q' in command:
+                raise Exception('rpm not installed')
+            return outputs.pop()
+
+        mock_run.side_effect = cmd_output
+
+        assert find_package_version('package', '/foo') == '2.2.1'
+
+        mock_run.assert_has_calls([
+            call([
+                'rpm', '-qp', '--queryformat',
+                '%{NAME}', '/foo/bar/package.rpm'
+            ]),
+            call([
+                'rpm', '-qp', '--queryformat',
+                '%{NAME}', '/foo/zez/package.rpm'
+            ])
+        ])
+
     @patch((
         'replace_using_package_version.'
         'replace_using_package_version.apply_regex_to_file'
