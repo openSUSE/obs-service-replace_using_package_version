@@ -162,7 +162,7 @@ def test_version_replacement_from_obsinfo_file(
 
     assert auto_container_per_test.connection.file(
         TESTFILE
-    ).content_string.strip().split("\n")[1] == ".".join(
+    ).content_string.strip().splitlines()[1] == ".".join(
         somepackage_ver.split(".")[: index + 1]
     )
 
