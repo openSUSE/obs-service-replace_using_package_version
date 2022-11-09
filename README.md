@@ -18,16 +18,30 @@ To set the development environment consider the following commands:
 $ cd obs-service-replace_using_package_version
 
 # Initiate the python3 virtualenv
-$ python3 -m venv .env3
+$ poetry shell
 
-# Activate the virutalenv
-$ source .env3/bin/activate
-
-# Install development dependencies
-$ pip install -r requirements.txt
+# Install the project and dependencies into the virtual env
+$ poetry install
 
 # Run tests and code style checks
 $ tox
+```
+
+In case the development host is on a distro which does not include poetry
+one can still manually create a virtual environment and install poetry there.
+
+```bash
+# Create a virtual env
+$ python3 -v env .env3
+
+# Load the venv
+$ source .env3/bin/activate
+
+# Install poetry
+$ pip install poetry
+
+# Install the project and dependencies to the virtual env
+$ poetry install
 ```
 
 ## Usage
@@ -46,6 +60,15 @@ Consider a `_service` file that includes the following:
 The service in this case would look for the `mariadb` package in the build
 environment, get its version, and try to replace any occurrence of `%%TAG%%`
 in the `mariadb-setup.sh` file with the `mariadb` package version.
+
+In case the `mariadb` rpm package is not found within the build environment
+it will also try to fecth the version from a `mariadb.obsinfo` file if any.
+If no version can be determined the service fails.
+
+`*.obsinfo` files are metadata files produced by the `obs_scm` service, which
+is essentially used to retrieve sources from source repositories. This can be
+useful for some corner cases in which the required package version is not part
+of the build dependencies, this is likely to happen for helm chart builds.
 
 The `file` parameter is optional and when omitted it will default to the
 package's build recipe file, e.g. `Dockerfile` or `mariadb-image.kiwi`.
