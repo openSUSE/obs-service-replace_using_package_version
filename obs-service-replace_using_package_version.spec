@@ -49,8 +49,8 @@ sed -i "s|#!/usr/bin/env python3|#!/usr/bin/python3|g" %{service}.py
 
 %install
 
-%{__install} -D -m 755 %{service}.py %{buildroot}%{_prefix}/lib/obs/service/%{service}
-%{__install} -D -m 644 %{service}.service %{buildroot}%{_prefix}/lib/obs/service/%{service}.service
+install -D -m 755 %{service}.py %{buildroot}%{_prefix}/lib/obs/service/%{service}
+install -D -m 644 %{service}.service %{buildroot}%{_prefix}/lib/obs/service/%{service}.service
 
 %files
 %defattr(-,root,root)
