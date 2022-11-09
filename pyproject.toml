@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "replace_using_package_version"
-version = "0.0.3"
+version = "0.0.4"
 description = "An OBS service: Replaces a regex with the version value of a package"
 authors = ["David Cassany <dcassany@suse.com>"]
 license = "GPL-3.0-or-later"
