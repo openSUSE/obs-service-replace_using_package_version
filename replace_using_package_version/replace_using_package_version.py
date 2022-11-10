@@ -189,7 +189,7 @@ def find_match_in_version(regexpr, version):
 
 
 def run_command(command: List[str]) -> str:
-    return subprocess.check_output(command, stderr=subprocess.STDOUT).decode()
+    return subprocess.check_output(command).decode()
 
 
 def get_pkg_name_from_rpm(rpm_file):

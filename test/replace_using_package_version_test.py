@@ -90,22 +90,16 @@ class TestRegexReplacePackageVersion(object):
             '14.2.1.468+g994fd9e0cc')
         assert match == '14.2.1.468+g994fd9e0cc'
 
-    @patch((
-        'replace_using_package_version.'
-        'replace_using_package_version.run_command'
-    ))
+    @patch('subprocess.check_output')
     def test_find_package_version(self, mock_run):
-        mock_run.return_value = '2.3.1'
+        mock_run.return_value = b'2.3.1'
         assert find_package_version('package', '/foo') == '2.3.1'
         mock_run.called_once_with([
             'rpm', '-q', '--queryformat',
             '%{NAME}', 'package.rpm'
         ])
 
-    @patch((
-        'replace_using_package_version.'
-        'replace_using_package_version.run_command'
-    ))
+    @patch('subprocess.check_output')
     @patch('os.walk')
     def test_find_package_version_rpm_not_installed(self, mock_walk, mock_run):
         mock_walk.return_value = [
@@ -113,7 +107,7 @@ class TestRegexReplacePackageVersion(object):
             ('/foo/bar', [], ['spam', 'package.rpm']),
             ('/foo/zez', [], ['package.rpm', 'somefile'])
         ]
-        outputs = ['2.3.1', 'package', '2.2.4', 'package']
+        outputs = [b'2.3.1', b'package', b'2.2.4', b'package']
 
         def cmd_output(command):
             if '-q' in command:
@@ -133,10 +127,7 @@ class TestRegexReplacePackageVersion(object):
             ]),
         ])
 
-    @patch((
-        'replace_using_package_version.'
-        'replace_using_package_version.run_command'
-    ))
+    @patch('subprocess.check_output')
     @patch('os.walk')
     def test_find_package_version_not_found(self, mock_walk, mock_run):
         mock_walk.return_value = [
@@ -144,7 +135,7 @@ class TestRegexReplacePackageVersion(object):
             ('/foo/bar', [], ['spam', 'package.rpm']),
             ('/foo/zez', [], ['package.rpm', 'somefile'])
         ]
-        outputs = ['another_non_matching_name', 'not_matching_name']
+        outputs = [b'another_non_matching_name', b'not_matching_name']
 
         def cmd_output(command):
             if '-q' in command:

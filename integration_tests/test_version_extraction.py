@@ -16,6 +16,8 @@ RUN echo $'This is a testfile with some replacements like %%MINOR%%\n\
 %NEVR%\n\
 and a footer?' > {TESTFILE}
 
+# remove the signkeys to mimic the state in OBS workers
+RUN rpm -qa|grep '^gpg-pubkey'|xargs rpm -e
 RUN mkdir -p /.build-srcdir/repos/ && mv $(find /var/cache/zypp/ -name 'apache*') /.build-srcdir/repos/
 
 RUN mkdir /.build/ && echo $'RECIPEFILE="Dockerfile"\n\
