@@ -68,7 +68,7 @@ If no version can be determined the service fails.
 `*.obsinfo` files are metadata files produced by the `obs_scm` service, which
 is essentially used to retrieve sources from source repositories. This can be
 useful for some corner cases in which the required package version is not part
-of the build dependencies, this is likely to happen for helm chart builds.
+of the build dependencies (this is likely to happen for helm chart builds).
 
 The `file` parameter is optional and when omitted it will default to the
 package's build recipe file, e.g. `Dockerfile` or `mariadb-image.kiwi`.
