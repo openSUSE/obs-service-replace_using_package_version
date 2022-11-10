@@ -63,7 +63,7 @@ in the `mariadb-setup.sh` file with the `mariadb` package version.
 
 In case the `mariadb` rpm package is not found within the build environment
 it will also try to fecth the version from a `mariadb.obsinfo` file if any.
-If no version can be determined the service fails.
+The service fails if no version can be determined.
 
 `*.obsinfo` files are metadata files produced by the `obs_scm` service, which
 is essentially used to retrieve sources from source repositories. This can be
