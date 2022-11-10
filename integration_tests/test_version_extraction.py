@@ -35,15 +35,22 @@ ENV BUILD_DIST="/.build/build.dist"
 TUMBLEWEED = DerivedContainer(
     base="registry.opensuse.org/opensuse/tumbleweed", containerfile=CONTAINERFILE
 )
-LEAP = DerivedContainer(
-    base="registry.opensuse.org/opensuse/leap:15.3", containerfile=CONTAINERFILE
+LEAP_15_3, LEAP_15_4 = (
+    DerivedContainer(
+        base=f"registry.opensuse.org/opensuse/leap:15.{ver}",
+        containerfile=CONTAINERFILE,
+    )
+    for ver in (3, 4)
 )
-SLE = DerivedContainer(
-    base="registry.suse.com/suse/sle15:15.3", containerfile=CONTAINERFILE
+BCI_BASE_15_3, BCI_BASE_15_4 = (
+    DerivedContainer(
+        base=f"registry.suse.com/bci/bci-base:15.{ver}", containerfile=CONTAINERFILE
+    )
+    for ver in (3, 4)
 )
 
 
-CONTAINER_IMAGES = [TUMBLEWEED, LEAP, SLE]
+CONTAINER_IMAGES = [TUMBLEWEED, LEAP_15_3, LEAP_15_4, BCI_BASE_15_3, BCI_BASE_15_4]
 
 
 def test_help_works(auto_container):
