@@ -7,6 +7,7 @@ from replace_using_package_version.replace_using_package_version import (
 )
 
 TESTFILE = "/opt/testfile"
+OBSINFO_VERSION = "1.6.3"
 
 CONTAINERFILE = rf"""RUN zypper -n in python3-pip find && zypper -n download apache2 python3
 WORKDIR /.build-srcdir/
@@ -28,6 +29,9 @@ BUILD_DIST="/.build/build.dist"' > /.build/build.data
 
 RUN echo $'FROM registry.opensuse.org/opensuse/tumbleweed\n\
 LABEL VERSION="%%VERSION%%"' > /.build-srcdir/Dockerfile
+
+RUN echo $'name: somepackage\n\
+version: {OBSINFO_VERSION}' > /.build-srcdir/somepackage.obsinfo
 
 ENV BUILD_DIST="/.build/build.dist"
 """
@@ -142,6 +146,24 @@ def test_version_replacement_from_local_file(
         TESTFILE
     ).content_string.strip().split("\n")[1] == ".".join(
         apache2_ver.split(".")[: index + 1]
+    )
+
+
+@pytest.mark.parametrize("version,index", [("major", 0), ("minor", 1), ("patch", 2)])
+def test_version_replacement_from_obsinfo_file(
+    auto_container_per_test, version: str, index: int
+):
+    auto_container_per_test.connection.run_expect(
+        [0],
+        f"replace_using_package_version --file {TESTFILE} --outdir /opt/ --regex='%NEVR%' --package='somepackage' --parse-version='{version}'",
+    )
+
+    somepackage_ver = OBSINFO_VERSION
+
+    assert auto_container_per_test.connection.file(
+        TESTFILE
+    ).content_string.strip().splitlines()[1] == ".".join(
+        somepackage_ver.split(".")[: index + 1]
     )
 
 

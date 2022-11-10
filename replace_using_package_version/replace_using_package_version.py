@@ -59,6 +59,7 @@ version_regex = {
     'patch_update': r'^(\d+(\.\d+){0,3})',
     'offset': r'^(?:\d+(?:\.\d+){0,3})[+-.~](?:git|svn|cvs)(\d+)'
 }
+obsinfo_regex = r'version: (.+)'
 
 
 def guess_recipe_filename_from_env() -> Optional[str]:
@@ -160,24 +161,43 @@ def apply_regex_to_file(input_file, output_file, regex, replacement):
 
 
 def find_package_version(package, rpm_dir):
+    version = parse_version('')
     try:
         version = get_pkg_version(package)
     except Exception:
-        # If package is not found in rpmdb check local repositories
-        version = parse_version('')
-        for root, _, files in os.walk(rpm_dir):
-            packages = [
-                f for f in files if f.endswith('rpm') and package in f
-            ]
-            for pkg in packages:
-                rpm_file = os.path.realpath(os.path.join(root, pkg))
-                if get_pkg_name_from_rpm(rpm_file) == package:
-                    rpm_version = get_pkg_version_from_rpm(rpm_file)
-                    if rpm_version >= version:
-                        version = rpm_version
+        version = find_package_version_in_local_repos(rpm_dir, package)
+
+    if not str(version):
+        version = find_package_version_in_obsinfo('.', package)
+
     if not str(version):
         raise Exception('Package version not found')
     return str(version)
+
+
+def find_package_version_in_local_repos(repo_path, package):
+    version = parse_version('')
+    for root, _, files in os.walk(repo_path):
+        packages = [
+            f for f in files if f.endswith('rpm') and package in f
+        ]
+        for pkg in packages:
+            rpm_file = os.path.join(root, pkg)
+            if get_pkg_name_from_rpm(rpm_file) == package:
+                rpm_ver = get_pkg_version_from_rpm(rpm_file)
+                if rpm_ver >= version:
+                    version = rpm_ver
+    return version
+
+
+def find_package_version_in_obsinfo(path, package):
+    version = parse_version('')
+    for f in os.listdir(path):
+        if f.endswith('obsinfo') and package in f:
+            obsinfo_ver = get_pkg_version_from_obsinfo(f)
+            if obsinfo_ver >= version:
+                version = obsinfo_ver
+    return version
 
 
 def find_match_in_version(regexpr, version):
@@ -190,6 +210,16 @@ def find_match_in_version(regexpr, version):
 
 def run_command(command: List[str]) -> str:
     return subprocess.check_output(command).decode()
+
+
+def get_pkg_version_from_obsinfo(obsinfo_file):
+    regex = re.compile(obsinfo_regex)
+    with open(obsinfo_file) as f:
+        for line in f:
+            match = regex.match(line)
+            if match:
+                return parse_version(match[1])
+    return parse_version('')
 
 
 def get_pkg_name_from_rpm(rpm_file):
