@@ -26,23 +26,8 @@ $ poetry install
 # Run tests and code style checks
 $ tox
 ```
-
-In case the development host is on a distro which does not include poetry
-one can still manually create a virtual environment and install poetry there.
-
-```bash
-# Create a virtual env
-$ python3 -v env .env3
-
-# Load the venv
-$ source .env3/bin/activate
-
-# Install poetry
-$ pip install poetry
-
-# Install the project and dependencies to the virtual env
-$ poetry install
-```
+Find `poetry` installation guide [here](https://python-poetry.org/docs/#installation)
+if the host distro does not provide `poetry`.
 
 ## Usage
 
