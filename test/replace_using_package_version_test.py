@@ -94,9 +94,9 @@ class TestRegexReplacePackageVersion(object):
     def test_find_package_version(self, mock_run):
         mock_run.return_value = b'2.3.1'
         assert find_package_version('package', '/foo') == '2.3.1'
-        mock_run.called_once_with([
+        mock_run.assert_called_once_with([
             'rpm', '-q', '--queryformat',
-            '%{NAME}', 'package.rpm'
+            '%{VERSION}', 'package'
         ])
 
     @patch('subprocess.check_output')
