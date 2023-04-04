@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
-# Copyright (c) 2018 SUSE Linux GmbH.  All rights reserved.
+# SPDX-FileCopyrightText: (c) 2023 SUSE LLC
 #
 # This file is part of obs-service-replace_using_package_version.
 #
