@@ -28,6 +28,7 @@ jobs:
           key: tox-${{ matrix.python_version }}-${{ hashFiles('poetry.lock') }}
 
       - run: pip install --user --upgrade tox
+      - run: sudo apt -y install python3-rpm
       - run: 'tox -e py${PY_VER//\./} -- -vv'
         env:
           PY_VER: ${{ matrix.python_version }}
@@ -55,6 +56,7 @@ jobs:
         with:
           path: ~/.cache/pypoetry/virtualenvs
           key: poetry-${{ matrix.python_version }}-${{ hashFiles('poetry.lock') }}
+      - run: sudo apt -y install python3-rpm
 
       - run: |
           poetry install
@@ -75,6 +77,7 @@ jobs:
           path: ~/.tox
           key: tox-${{ hashFiles('poetry.lock') }}
 
+      - run: sudo apt -y install python3-rpm
       - run: pip install --user --upgrade tox
 
       - run: 'tox -e integration -- -n auto -vv'
