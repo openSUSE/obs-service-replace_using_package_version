@@ -11,26 +11,24 @@ jobs:
   ci:
     name: Run the unit tests
     runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        python_version: ["3.7", "3.8", "3.9", "3.10"]
 
     steps:
       - uses: actions/checkout@v3
-      - uses: actions/setup-python@v4.5.0
-        with:
-          python-version: ${{ matrix.python_version }}
-      - uses: Gr1N/setup-poetry@v8
       - uses: actions/cache@v3
         with:
           path: ~/.tox
           key: tox-${{ matrix.python_version }}-${{ hashFiles('poetry.lock') }}
 
-      - run: pip install --user --upgrade tox
-      - run: 'tox -e py${PY_VER//\./} -- -vv'
-        env:
-          PY_VER: ${{ matrix.python_version }}
+      - run: |
+          pip install --user pipx
+          pipx ensurepath
+          pipx install tox
+          pipx install poetry
+          sudo apt -y install python3-rpm
+
+      - run: |
+          export TOXENV=$(python -c "from sys import version_info; print(f'py{version_info[0]}{version_info[1]}')")
+          tox -- -vv
 
       # - name: Upload coverage to Codecov
       #   uses: codecov/codecov-action@v2
@@ -40,21 +38,21 @@ jobs:
   install:
     name: Build and install the package
     runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        python_version: ["3.7", "3.8", "3.9", "3.10"]
 
     steps:
       - uses: actions/checkout@v3
-      - uses: actions/setup-python@v4.5.0
-        with:
-          python-version: ${{ matrix.python_version }}
-      - uses: Gr1N/setup-poetry@v8
+
+      - run: |
+          pip install --user pipx
+          pipx ensurepath
+          pipx install tox
+          pipx install poetry
+          sudo apt -y install python3-rpm
+
       - uses: actions/cache@v3
         with:
           path: ~/.cache/pypoetry/virtualenvs
-          key: poetry-${{ matrix.python_version }}-${{ hashFiles('poetry.lock') }}
+          key: poetry-${{ hashFiles('poetry.lock') }}
 
       - run: |
           poetry install
@@ -75,6 +73,7 @@ jobs:
           path: ~/.tox
           key: tox-${{ hashFiles('poetry.lock') }}
 
+      - run: sudo apt -y install python3-rpm
       - run: pip install --user --upgrade tox
 
       - run: 'tox -e integration -- -n auto -vv'

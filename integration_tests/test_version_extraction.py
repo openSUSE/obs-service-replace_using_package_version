@@ -1,6 +1,7 @@
 import pytest
 
 from pytest_container import DerivedContainer
+from pytest_container.container import ContainerData
 
 from replace_using_package_version.replace_using_package_version import (
     __doc__ as pkg_doc,
@@ -9,7 +10,7 @@ from replace_using_package_version.replace_using_package_version import (
 TESTFILE = "/opt/testfile"
 OBSINFO_VERSION = "1.6.3"
 
-CONTAINERFILE = rf"""RUN zypper -n in python3-pip find && zypper -n download apache2 python3
+CONTAINERFILE = rf"""RUN zypper -n in python3-pip python3-rpm find && zypper -n download apache2 python3
 WORKDIR /.build-srcdir/
 COPY dist/*whl /opt/
 RUN pip install /opt/*whl
@@ -20,6 +21,9 @@ and a footer?' > {TESTFILE}
 # remove the signkeys to mimic the state in OBS workers
 RUN rpm -qa|grep '^gpg-pubkey'|xargs rpm -e
 RUN mkdir -p /.build-srcdir/repos/ && mv $(find /var/cache/zypp/ -name 'apache*') /.build-srcdir/repos/
+
+# copy our invalid version dummy rpm into the repos
+COPY integration_tests/assets/hello-world-1.1.2.P3-1.x86_64.rpm /.build-srcdir/repos/
 
 RUN mkdir /.build/ && echo $'RECIPEFILE="Dockerfile"\n\
 BUILD_JOBS="12"\n\
@@ -72,7 +76,7 @@ def test_failure_when_file_non_existent(auto_container):
         f"File {fname} not found"
         in auto_container.connection.run_expect(
             [1],
-            fr"replace_using_package_version --file {fname} --outdir /opt/ --regex='footer' --package=apache2",
+            rf"replace_using_package_version --file {fname} --outdir /opt/ --regex='footer' --package=apache2",
         ).stderr
     )
 
@@ -83,7 +87,7 @@ def test_failure_when_outdir_non_existent(auto_container):
         f"Output directory {dirname} not found"
         in auto_container.connection.run_expect(
             [1],
-            fr"replace_using_package_version --file {TESTFILE} --outdir {dirname} --regex='footer' --package=apache2",
+            rf"replace_using_package_version --file {TESTFILE} --outdir {dirname} --regex='footer' --package=apache2",
         ).stderr
     )
 
@@ -93,7 +97,7 @@ def test_failure_when_invalid_parse_version(auto_container):
         "Invalid value for this flag."
         in auto_container.connection.run_expect(
             [1],
-            fr"replace_using_package_version --file {TESTFILE} --outdir /opt/ --regex='footer' --package='zypper' --parse-version='foobar'",
+            rf"replace_using_package_version --file {TESTFILE} --outdir /opt/ --regex='footer' --package='zypper' --parse-version='foobar'",
         ).stderr
     )
 
@@ -139,7 +143,7 @@ def test_version_replacement_from_local_file(
 
     apache2_ver = auto_container_per_test.connection.run_expect(
         [0],
-        "rpm -q --qf '%{version}' /.build-srcdir/repos/*rpm",
+        "rpm -q --qf '%{version}' /.build-srcdir/repos/apache*rpm",
     ).stdout.strip()
 
     assert auto_container_per_test.connection.file(
@@ -174,14 +178,30 @@ def test_replacement_from_default_build_recipe(auto_container_per_test):
     )
     apache2_ver = auto_container_per_test.connection.run_expect(
         [0],
-        "rpm -q --qf '%{version}' /.build-srcdir/repos/*rpm",
+        "rpm -q --qf '%{version}' /.build-srcdir/repos/apache*rpm",
     ).stdout.strip()
 
     assert (
-        auto_container_per_test.connection.file(
-            "/opt/Dockerfile"
-        ).content_string
+        auto_container_per_test.connection.file("/opt/Dockerfile").content_string
         == f"""FROM registry.opensuse.org/opensuse/tumbleweed\n\
 LABEL VERSION="{apache2_ver}"
 """
+    )
+
+
+def test_version_replacement_from_invalid_python_version(
+    auto_container_per_test: ContainerData,
+) -> None:
+    auto_container_per_test.connection.run_expect(
+        [0],
+        f"replace_using_package_version --file {TESTFILE} --outdir /opt/ --regex='%NEVR%' --package='hello-world'",
+    )
+    hello_world_ver = auto_container_per_test.connection.run_expect(
+        [0],
+        "rpm -q --qf '%{version}' /.build-srcdir/repos/hello-world*rpm",
+    ).stdout.strip()
+
+    assert (
+        auto_container_per_test.connection.file(TESTFILE).content_string.splitlines()[1]
+        == hello_world_ver
     )
