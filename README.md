@@ -29,6 +29,23 @@ $ tox
 Find `poetry` installation guide [here](https://python-poetry.org/docs/#installation)
 if the host distro does not provide `poetry`.
 
+### Cutting a new release
+
+This python project makes use of the
+[bumpversion](https://pypi.org/project/bumpversion/) utility. It is configured
+via the `.bumpversion.cfg` file.
+
+The utility commits the version change in the required files and creates a new
+tag in the local git repository.
+
+For instance a new patch version is created as:
+
+```ShellSession
+$ bumpversion patch
+$ git push origin master
+$ git push origin <new_version_tag>
+```
+
 ## Usage
 
 Consider a `_service` file that includes the following:
