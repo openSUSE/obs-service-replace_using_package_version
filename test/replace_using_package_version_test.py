@@ -1,5 +1,5 @@
 import sys
-from mock import patch, mock_open, call
+from unittest.mock import patch, mock_open, call
 
 from replace_using_package_version.replace_using_package_version import (
     apply_regex_to_file,
