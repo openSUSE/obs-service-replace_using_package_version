@@ -25,7 +25,7 @@ pytest = "^7.0.1"
 pytest-cov = "^4.0.0"
 tox = "^3.28.0"
 bumpversion = "^0.6.0"
-pytest-container = "^0.1.1"
+pytest-container = "^0.2.0"
 pytest-xdist = "^3.0.2"
 
 [build-system]

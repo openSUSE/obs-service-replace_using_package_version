@@ -395,13 +395,13 @@ testing = ["argcomplete", "hypothesis (>=3.56)", "mock", "nose", "pygments (>=2.
 
 [[package]]
 name = "pytest-container"
-version = "0.1.1"
+version = "0.2.0"
 description = "Pytest fixtures for writing container based tests"
 optional = false
 python-versions = ">=3.6.2,<4.0"
 files = [
-    {file = "pytest_container-0.1.1-py3-none-any.whl", hash = "sha256:df182233775c87a342e1673159eece40410a99569db6199f53af42719050ec41"},
-    {file = "pytest_container-0.1.1.tar.gz", hash = "sha256:c1556c34fde2b6b68f86ce4af16194d7801b6a2e690ad326eaeb1c54c52cf02e"},
+    {file = "pytest_container-0.2.0-py3-none-any.whl", hash = "sha256:5cfde475820aba8f4241df40cfeab59a87376e7e1b3714973f5f47c24387a8aa"},
+    {file = "pytest_container-0.2.0.tar.gz", hash = "sha256:39a25a7af0333b2c52ac8ba618155fee75192646991540b0ee9201bbf5a65e58"},
 ]
 
 [package.dependencies]
@@ -581,4 +581,4 @@ testing = ["func-timeout", "jaraco.itertools", "pytest (>=4.6)", "pytest-black (
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.6.2,<4.0"
-content-hash = "2d95df107ae601dbbad5935fc8029ac67ce1f27809fcaa34518806087e316294"
+content-hash = "e8a29f2e587b7a769c8555bc14aa189d5f283eff5a767e48a26e5316388396c0"
