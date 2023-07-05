@@ -146,7 +146,7 @@ class TestRegexReplacePackageVersion(object):
         try:
             find_package_version('package', '/foo') == '2.3.1'
         except Exception as e:
-            assert 'version not found' in str(e)
+            assert 'Package package version not found' in str(e)
         mock_run.assert_has_calls([
             call([
                 'rpm', '-qp', '--queryformat',
