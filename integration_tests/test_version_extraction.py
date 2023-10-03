@@ -1,3 +1,6 @@
+
+"""integration tests for the version extraction functionality of the replace_using_package_version package.
+"""
 import pytest
 
 from pytest_container import DerivedContainer
@@ -10,15 +13,17 @@ from replace_using_package_version.replace_using_package_version import (
 TESTFILE = "/opt/testfile"
 OBSINFO_VERSION = "1.6.3"
 
-CONTAINERFILE = rf"""RUN zypper -n in python3-pip python3-rpm find && zypper -n download apache2 python3
+CONTAINERFILE = rf"""
+RUN zypper -n in python3-pip python3-rpm find && zypper -n download apache2 python3
 WORKDIR /.build-srcdir/
-COPY dist/*whl /opt/
+COPY dist/*.whl /opt/
+RUN rm -vf /usr/lib64/python3.*/EXTERNALLY-MANAGED
 RUN pip install /opt/*whl
 RUN echo $'This is a testfile with some replacements like %%MINOR%%\n\
 %NEVR%\n\
 and a footer?' > {TESTFILE}
 
-# remove the signkeys to mimic the state in OBS workers
+# remove the signing keys to mimic the state in OBS workers
 RUN rpm -qa|grep '^gpg-pubkey'|xargs rpm -e
 RUN mkdir -p /.build-srcdir/repos/ && mv $(find /var/cache/zypp/ -name 'apache*') /.build-srcdir/repos/
 
