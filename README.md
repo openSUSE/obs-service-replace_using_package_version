@@ -96,7 +96,7 @@ of the build dependencies (this is likely to happen for helm chart builds).
 The `file` parameter is optional and when omitted it will default to the
 package's build recipe file, e.g. `Dockerfile` or `mariadb-image.kiwi`.
 
-The `parse-version` could be skipped or if parameter's regular expression 
+The `parse-version` could be skipped or if parameter's regular expression
 doesn't match then full package version is returned.
 
 Possible `parse-version` values and it returned value in X.Y.Z.N version:
@@ -110,13 +110,13 @@ Possible `parse-version` values and it returned value in X.Y.Z.N version:
   * but if you have offset in your version X.Y.Z+git5 it returns 5
 * `parse-version` is absent or parameter doesn't match, returns X.Y.Z.N
 
-For instance, in this specific case, the service will apply the 
+For instance, in this specific case, the service will apply the
 `^(\d+(\.\d+){0,1})` regular expression and use only the first match.
 In case `mariadb` version was `10.3.4~git_r154` only the `10.3` part would be
 used as the replacement string.
 
-You could use this service multiple times in your `_service` file so `offset` 
-parameter could be used in case you need more unique identification. 
+You could use this service multiple times in your `_service` file so `offset`
+parameter could be used in case you need more unique identification.
 For example %%TAG%%.%%OFFSET%% if you add another service with `regex` "%%OFFSET%%"
 and `parse-version` "offset".
 
