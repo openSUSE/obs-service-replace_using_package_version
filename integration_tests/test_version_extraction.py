@@ -210,3 +210,16 @@ def test_version_replacement_from_invalid_python_version(
         auto_container_per_test.connection.file(TESTFILE).content_string.splitlines()[1]
         == hello_world_ver
     )
+
+
+def test_version_replacement_from_provides(auto_container_per_test: ContainerData) -> None:
+    auto_container_per_test.connection.check_output(f"replace_using_package_version --file {TESTFILE} --outdir /opt/ --regex='%NEVR%' --package='httpd'")
+
+    apache2_ver = auto_container_per_test.connection.check_output(
+        "rpm -q --qf '%{version}' /.build-srcdir/repos/apache*rpm",
+    ).strip()
+
+    assert (
+        auto_container_per_test.connection.file(TESTFILE).content_string.splitlines()[1]
+        == apache2_ver
+    )
