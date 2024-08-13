@@ -55,15 +55,15 @@ LEAP_15_5, LEAP_15_6 = (
     )
     for ver in (5, 6)
 )
-BCI_BASE_15_3, BCI_BASE_15_4 = (
+BCI_BASE_15_3, BCI_BASE_15_4, BCI_BASE_15_5, BCI_BASE_15_6 = (
     DerivedContainer(
         base=f"registry.suse.com/bci/bci-base:15.{ver}", containerfile=CONTAINERFILE
     )
-    for ver in (3, 4)
+    for ver in (3, 4, 5, 6)
 )
 
 
-CONTAINER_IMAGES = [TUMBLEWEED, LEAP_15_5, LEAP_15_6, BCI_BASE_15_3, BCI_BASE_15_4]
+CONTAINER_IMAGES = [TUMBLEWEED, LEAP_15_5, LEAP_15_6, BCI_BASE_15_3, BCI_BASE_15_4, BCI_BASE_15_5, BCI_BASE_15_6]
 
 
 def test_help_works(auto_container):
