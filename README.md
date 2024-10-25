@@ -85,7 +85,12 @@ environment, get its version, and try to replace any occurrence of `%%TAG%%`
 in the `mariadb-setup.sh` file with the `mariadb` package version.
 
 In case the `mariadb` rpm package is not found within the build environment
-it will also try to fecth the version from a `mariadb.obsinfo` file if any.
+it will also try to fetch the version from a `mariadb.obsinfo` file if any.
+
+The service will look for packages providing `mariadb` if both obtaining the
+version from the file and from `mariadb.obsinfo` fails. If such a package is
+found, then its version is used.
+
 The service fails if no version can be determined.
 
 `*.obsinfo` files are metadata files produced by the `obs_scm` service, which
