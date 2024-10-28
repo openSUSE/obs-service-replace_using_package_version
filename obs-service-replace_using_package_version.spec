@@ -45,7 +45,7 @@ cp %{S:1} .
 cp %{S:2} .
 
 %build
-sed -i "s|#!/usr/bin/env python3|#!/usr/bin/python3|g" %{service}.py
+# intentionally blank - nothing to do
 
 %install
 
