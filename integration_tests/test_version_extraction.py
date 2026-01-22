@@ -99,7 +99,7 @@ def test_failure_when_outdir_non_existent(auto_container):
 
 def test_failure_when_invalid_parse_version(auto_container):
     assert (
-        "Invalid value for this flag."
+        "Invalid value 'foobar' for --parse-version flag. "
         in auto_container.connection.run_expect(
             [1],
             rf"replace_using_package_version --file {TESTFILE} --outdir /opt/ --regex='footer' --package='zypper' --parse-version='foobar'",
