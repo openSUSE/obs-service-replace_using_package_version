@@ -90,13 +90,49 @@ class TestRegexReplacePackageVersion(object):
             '14.2.1.468+g994fd9e0cc')
         assert match == '14.2.1.468+g994fd9e0cc'
 
+        match = find_match_in_version(
+            version_regex['release'], '5-150700.0.1.1')
+        assert match == '5-150700.0.1'
+        match = find_match_in_version(
+            version_regex['release'], '1.1-150700.0.1.1')
+        assert match == '1.1-150700.0.1'
+        match = find_match_in_version(
+            version_regex['release'], '0.0.1-150700.0.1.1')
+        assert match == '0.0.1-150700.0.1'
+        match = find_match_in_version(
+            version_regex['release'], '14.2.1.468+git994fd9e0cc-150700.0.1.1')
+        assert match == '14.2.1.468+git994fd9e0cc-150700.0.1'
+        match = find_match_in_version(
+            version_regex['release'], '3.14.1+git5.g9265358-150700.0.1.1')
+        assert match == '3.14.1+git5.g9265358-150700.0.1.1'
+
+        match = find_match_in_version(
+            version_regex['release_increment'], '5-150700.0.1.1')
+        assert match == '5-150700.0.1.1'
+        match = find_match_in_version(
+            version_regex['release_increment'], '1.1-150700.0.1.1')
+        assert match == '1.1-150700.0.1.1'
+        match = find_match_in_version(
+            version_regex['release_increment'], '0.0.1-150700.0.1.1')
+        assert match == '0.0.1-150700.0.1.1'
+        match = find_match_in_version(
+            version_regex['release_increment'],
+            '14.2.1.468+git994fd9e0cc-150700.0.1.1'
+        )
+        assert match == '14.2.1.468+git994fd9e0cc-150700.0.1.1'
+        match = find_match_in_version(
+            version_regex['release_increment'],
+            '3.14.1+git5.g9265358-150700.0.1.1'
+        )
+        assert match == '3.14.1+git5.g9265358-150700.0.1.1'
+
     @patch('subprocess.check_output')
     def test_find_package_version(self, mock_run):
         mock_run.return_value = b'2.3.1'
         assert find_package_version('package', '/foo') == '2.3.1'
         mock_run.assert_called_once_with([
             'rpm', '-q', '--queryformat',
-            '%{VERSION}', 'package'
+            '%{VERSION}-%{RELEASE}', 'package'
         ])
 
     @patch('subprocess.check_output')
@@ -123,7 +159,7 @@ class TestRegexReplacePackageVersion(object):
             ]),
             call([
                 'rpm', '-qp', '--queryformat',
-                '%{VERSION}', '/foo/bar/package.rpm'
+                '%{VERSION}-%{RELEASE}', '/foo/bar/package.rpm'
             ]),
         ])
 
@@ -294,7 +330,9 @@ class TestRegexReplacePackageVersion(object):
         try:
             main()
         except Exception as e:
-            assert 'Invalid value for this flag.' in str(e)
+            assert (
+                "Invalid value 'invalid-value' for --parse-version flag."
+            ) in str(e)
             exception = True
         assert exception
 
