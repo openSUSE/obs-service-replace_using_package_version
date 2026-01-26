@@ -19,7 +19,7 @@
 %define service replace_using_package_version
 
 Name:           obs-service-%{service}
-Version:        0.0.11
+Version:        0.0.12
 Release:        0
 Summary:        An OBS service: Replaces a regex  with the version value of a package
 License:        GPL-3.0-or-later
