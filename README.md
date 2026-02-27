@@ -9,7 +9,7 @@ This service makes sense mostly in `buildtime` mode.
 
 ## Development
 
-This is a python project that makes use of setuptools and virtual environment.
+This is a python project that uses Poetry and Tox for development.
 
 To set the development environment consider the following commands:
 
@@ -17,17 +17,12 @@ To set the development environment consider the following commands:
 # Get into the repository folder
 $ cd obs-service-replace_using_package_version
 
-# Initiate the python3 virtualenv
-$ poetry shell
-
-# Install the project and dependencies into the virtual env
-$ poetry install
-
 # Run tests and code style checks
 $ tox
 ```
-Find `poetry` installation guide [here](https://python-poetry.org/docs/#installation)
-if the host distro does not provide `poetry`.
+
+Find `tox` installation guide [here](https://tox.wiki/en/latest/installation.html)
+if the host distro does not provide `tox`.
 
 ### Cutting a new release
 
