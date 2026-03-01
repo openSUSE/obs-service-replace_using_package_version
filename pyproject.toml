@@ -21,7 +21,10 @@ docopt = ">= 0.6.2"
 [tool.poetry.dev-dependencies]
 coverage = ">=6.0"
 flake8 = ">=5.0"
-pytest = ">=7.0"
+pytest = [
+  {version = ">=7.0,<8.0", python = "<3.14"},
+  {version = ">=8.0", python = ">=3.14"}
+]
 pytest-cov = ">=4.0"
 tox = ">=3.28"
 bumpversion = ">=0.6.0"
