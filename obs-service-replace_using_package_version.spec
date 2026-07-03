@@ -28,7 +28,7 @@ Source0:        %{service}.py
 Source1:        %{service}.service
 Source2:        LICENSE
 BuildRequires:  sed
-Requires:       /usr/bin/python3
+Requires:       python3-base
 Requires:       python3-docopt
 Requires:       python3-rpm
 BuildArch:      noarch
