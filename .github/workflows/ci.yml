@@ -67,7 +67,7 @@ jobs:
     steps:
       - uses: actions/checkout@v7
       - uses: actions/setup-python@v7.0.0
-      - uses: Gr1N/setup-poetry@v9
+      - uses: Gr1N/setup-poetry@v10
       - uses: actions/cache@v6
         with:
           path: ~/.tox
@@ -85,7 +85,7 @@ jobs:
     steps:
       - uses: actions/checkout@v7
       - uses: actions/setup-python@v7.0.0
-      - uses: Gr1N/setup-poetry@v9
+      - uses: Gr1N/setup-poetry@v10
       - uses: actions/cache@v6
         with:
           path: ~/.tox
